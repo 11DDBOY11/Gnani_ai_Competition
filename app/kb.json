@@ -1,0 +1,127 @@
+{
+  "_note": "STARTER DATA. Every chemical block is reviewed=false, so the bot will NOT speak any pesticide name or dose until an agronomist fills all fields and sets reviewed=true. Have a native Kannada speaker proofread all text.",
+  "advisories": [
+    {
+      "id": "paddy_leaf_folder",
+      "crop": "paddy",
+      "name_kn": "ಎಲೆ ಸುತ್ತುವ ಹುಳು",
+      "needs_stage": true,
+      "advice_kn": {
+        "seedling": [
+          "ಸಸಿ ಹಂತದಲ್ಲಿ ಸ್ವಲ್ಪ ಹಾನಿಯಾದರೆ ಬೆಳೆ ತಾನೇ ಚೇತರಿಸಿಕೊಳ್ಳುತ್ತದೆ.",
+          "ಈಗಲೇ ರಾಸಾಯನಿಕ ಔಷಧ ಸಿಂಪಡಿಸಬೇಡಿ.",
+          "ಗದ್ದೆಯಲ್ಲಿ ಎಷ್ಟು ಹುಳುಗಳಿವೆ ಎಂದು ಪರಿಶೀಲಿಸಿ ಮತ್ತು ಬದುಗಳ ಕಳೆ ತೆಗೆಯಿರಿ."
+        ],
+        "default": [
+          "ಹುಳುಗಳ ಸಂಖ್ಯೆ ಮತ್ತು ಹಾನಿಯನ್ನು ಗದ್ದೆಯಲ್ಲಿ ಪರಿಶೀಲಿಸಿ.",
+          "ಅಗತ್ಯಕ್ಕಿಂತ ಹೆಚ್ಚು ಸಾರಜನಕ ಗೊಬ್ಬರ ಹಾಕಬೇಡಿ."
+        ]
+      },
+      "block_chemical_stages": [
+        "seedling"
+      ],
+      "chemical": {
+        "reviewed": false,
+        "product": null,
+        "dose": null,
+        "water": null,
+        "preharvest_days": null,
+        "source": null,
+        "reviewed_by": null,
+        "review_date": null
+      }
+    },
+    {
+      "id": "paddy_blast",
+      "crop": "paddy",
+      "name_kn": "ಬೆಂಕಿ ರೋಗ",
+      "needs_stage": false,
+      "advice_kn": {
+        "default": [
+          "ಹೆಚ್ಚು ಸಾರಜನಕ ಗೊಬ್ಬರ ಹಾಕಬೇಡಿ.",
+          "ಗದ್ದೆಯಲ್ಲಿ ನೀರು ಸರಿಯಾಗಿ ನಿರ್ವಹಿಸಿ."
+        ]
+      },
+      "block_chemical_stages": [],
+      "chemical": {
+        "reviewed": false,
+        "product": null,
+        "dose": null,
+        "water": null,
+        "preharvest_days": null,
+        "source": null,
+        "reviewed_by": null,
+        "review_date": null
+      }
+    },
+    {
+      "id": "arecanut_koleroga",
+      "crop": "arecanut",
+      "name_kn": "ಅಡಿಕೆ ಕೊಳೆ ರೋಗ",
+      "needs_stage": false,
+      "advice_kn": {
+        "default": [
+          "ತೋಟದಲ್ಲಿ ಬಿದ್ದ ಕೊಳೆತ ಕಾಯಿಗಳನ್ನು ತೆಗೆದು ದೂರ ಹಾಕಿ.",
+          "ಮಳೆ ಬರುವ ಮೊದಲು ತಡೆಗಟ್ಟುವ ಕ್ರಮ ತೆಗೆದುಕೊಳ್ಳುವುದು ಮುಖ್ಯ."
+        ]
+      },
+      "block_chemical_stages": [],
+      "chemical": {
+        "reviewed": false,
+        "product": null,
+        "dose": null,
+        "water": null,
+        "preharvest_days": null,
+        "source": null,
+        "reviewed_by": null,
+        "review_date": null
+      }
+    },
+    {
+      "id": "coconut_rhino_beetle",
+      "crop": "coconut",
+      "name_kn": "ಕೊಂಬಿನ ದುಂಬಿ",
+      "needs_stage": false,
+      "advice_kn": {
+        "default": [
+          "ತೋಟದಲ್ಲಿ ಕೊಳೆತ ಮರದ ದಿಮ್ಮಿ ಮತ್ತು ಗೊಬ್ಬರದ ರಾಶಿಯನ್ನು ಸ್ವಚ್ಛವಾಗಿಡಿ.",
+          "ಅಲ್ಲಿ ದುಂಬಿ ಮೊಟ್ಟೆ ಇಡುತ್ತದೆ."
+        ]
+      },
+      "block_chemical_stages": [],
+      "chemical": {
+        "reviewed": false,
+        "product": null,
+        "dose": null,
+        "water": null,
+        "preharvest_days": null,
+        "source": null,
+        "reviewed_by": null,
+        "review_date": null
+      }
+    },
+    {
+      "id": "coconut_bud_rot",
+      "crop": "coconut",
+      "name_kn": "ತೆಂಗಿನ ಸುಳಿ ಕೊಳೆ",
+      "needs_stage": false,
+      "advice_kn": {
+        "default": [
+          "ಇದು ಗಂಭೀರ ರೋಗ ಆಗಿರಬಹುದು.",
+          "ಕೂಡಲೇ ತೋಟಗಾರಿಕೆ ಇಲಾಖೆ ಅಥವಾ ಕೃಷಿ ವಿಜ್ಞಾನ ಕೇಂದ್ರದವರನ್ನು ಸಂಪರ್ಕಿಸಿ."
+        ]
+      },
+      "block_chemical_stages": [],
+      "chemical": {
+        "reviewed": false,
+        "product": null,
+        "dose": null,
+        "water": null,
+        "preharvest_days": null,
+        "source": null,
+        "reviewed_by": null,
+        "review_date": null
+      }
+    }
+  ]
+}

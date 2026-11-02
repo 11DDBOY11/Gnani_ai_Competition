@@ -1,0 +1,30 @@
+import os
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
+
+
+class Config:
+    def __init__(self):
+        e = os.environ.get
+        self.api_key = e("GNANI_API_KEY", "")
+        self.stt_url = "wss://api.vachana.ai/stt/v3/stream"
+        self.tts_url = "wss://api.vachana.ai/api/v1/tts"
+        self.stt_language = e("STT_LANGUAGE", "kn-IN,en-IN")
+        self.tts_model = e("TTS_MODEL", "timbre-v3.0")
+        self.tts_voice = e("TTS_VOICE", "Lakshmi")
+        self.tts_speed = float(e("TTS_SPEED", "0.95"))
+        self.sample_rate = int(e("SAMPLE_RATE", "8000"))
+        self.vad_threshold = float(e("VAD_THRESHOLD", "0.7"))
+        self.min_speech_ms = int(e("MIN_SPEECH_MS", "200"))
+        self.min_silence_ms = int(e("MIN_SILENCE_MS", "600"))
+        self.silence_timeout_s = float(e("SILENCE_TIMEOUT_S", "15"))
+        self.keyterms_max = int(e("KEYTERMS_MAX", "40"))
+        self.escalation_number = e("ESCALATION_NUMBER", "1800-180-1551")
+        self.cache_dir = e("CACHE_DIR", "cache/tts")
+        self.log_dir = e("LOG_DIR", "logs")
+
+
+cfg = Config()

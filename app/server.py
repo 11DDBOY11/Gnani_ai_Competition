@@ -12,6 +12,7 @@ app = FastAPI(title="Krishi Mitra")
 app.state.stt_factory = lambda: STTStream()
 app.state.tts_factory = lambda: TTS()
 FRAME = 1024
+_active_calls = 0
 
 
 @app.get("/health")
@@ -122,7 +123,8 @@ class Call:
                 fired_this_period = False
 
     async def run(self):
-        await self.ws.accept()
+        global _active_calls
+        _active_calls += 1
         try:
             await self.stt.open()
         except Exception as e:
@@ -138,6 +140,7 @@ class Call:
                 if not d.cancelled() and d.exception():
                     log.error("task ended: %r", d.exception())
         finally:
+            _active_calls -= 1
             for t in tasks:
                 t.cancel()
             for c in (self.stt, self.tts):
@@ -149,5 +152,12 @@ class Call:
 
 
 @app.websocket("/ws/call")
-async def ws_call(ws: WebSocket, phone: str = None):
+async def ws_call(ws: WebSocket, phone: str = None, token: str = None):
+    await ws.accept()
+    if cfg.call_token and token != cfg.call_token:
+        await ws.close(code=4401)
+        return
+    if _active_calls >= cfg.max_calls:
+        await ws.close(code=4403)
+        return
     await Call(ws, app.state.stt_factory(), app.state.tts_factory(), phone).run()

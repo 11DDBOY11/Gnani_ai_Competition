@@ -25,6 +25,8 @@ class Config:
         self.escalation_number = e("ESCALATION_NUMBER", "1800-180-1551")
         self.cache_dir = e("CACHE_DIR", "cache/tts")
         self.log_dir = e("LOG_DIR", "logs")
+        self.call_token = e("CALL_TOKEN", "")
+        self.max_calls = int(e("MAX_CALLS", "3"))
 
 
 cfg = Config()

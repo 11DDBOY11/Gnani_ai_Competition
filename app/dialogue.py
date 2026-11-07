@@ -8,7 +8,7 @@ CROPS = {
     "paddy": ["ಭತ್ತ", "ಬತ್ತ", "ಅಕ್ಕಿ", "ಗದ್ದೆ", "paddy", "rice", "bhatta"],
     "arecanut": ["ಅಡಿಕೆ", "ಅಡಕೆ", "ಸುಪಾರಿ", "arecanut", "areca", "adike"],
     "coconut": ["ತೆಂಗು", "ತೆಂಗಿನ", "ನಾರಿಕೇಳ", "coconut", "thengu"],
-    "sugarcane": ["ಕಬ್ಬು", "ಕಬ್ಬಿನ", "sugarcane", "sugar cane"],  # NEEDS NATIVE REVIEW
+    "sugarcane": ["ಕಬ್ಬು", "ಕಬ್ಬಿನ", "ಕಬ್ಬಿಗೆ", "sugarcane", "sugar cane"],  # NEEDS NATIVE REVIEW
     "grapes": ["ದ್ರಾಕ್ಷಿ", "ದ್ರಾಕ್ಷಿಯ", "grapes", "grape"],  # NEEDS NATIVE REVIEW
     "pomegranate": ["ದಾಳಿಂಬೆ", "ಅನಾರ್", "pomegranate", "anar"],  # NEEDS NATIVE REVIEW
     "maize": ["ಮೆಕ್ಕೆಜೋಳ", "ಮುಸುಕಿನ", "maize", "corn", "makka"],  # NEEDS NATIVE REVIEW
@@ -58,7 +58,8 @@ GOODBYE = ["ಧನ್ಯವಾದ", "ಸಾಕು", "ಇಷ್ಟೇ", "thank", 
 REPEAT = ["ಮತ್ತೆ ಹೇಳಿ", "ಇನ್ನೊಮ್ಮೆ", "ಪುನಃ", "repeat"]
 
 T = {
-    "greeting": ["ನಮಸ್ಕಾರ. ಇದು ಕೃಷಿ ಮಿತ್ರ ಸೇವೆ.", "ಸೇವೆ ಸುಧಾರಿಸಲು ಈ ಕರೆಯನ್ನು ದಾಖಲಿಸಲಾಗುತ್ತದೆ.", "ನಿಮ್ಮ ಬೆಳೆ ಮತ್ತು ಸಮಸ್ಯೆಯನ್ನು ಕನ್ನಡದಲ್ಲಿ ಹೇಳಿ."],
+    # REVIEW: Human review of Kannada wording for initial greeting with privacy notice
+    "greeting": ["ನಮಸ್ಕಾರ. ಇದು ಕೃಷಿ ಮಿತ್ರ ಸೇವೆ.", "ಧ್ವನಿಯನ್ನು ರೆಕಾರ್ಡ್ ಮಾಡುವುದಿಲ್ಲ, ಆದರೆ ಸಂಭಾಷಣೆಯ ಪಠ್ಯವನ್ನು ದಾಖಲಿಸಿಕೊಳ್ಳಲಾಗುತ್ತದೆ.", "ನಿಮ್ಮ ಬೆಳೆ ಮತ್ತು ಸಮಸ್ಯೆಯನ್ನು ಕನ್ನಡದಲ್ಲಿ ಹೇಳಿ."],
     "ask_crop": ["ನಿಮ್ಮ ಬೆಳೆ ಯಾವುದು? ಭತ್ತ, ಅಡಿಕೆ, ಅಥವಾ ತೆಂಗು?"],
     "ask_problem": ["ಬೆಳೆಯಲ್ಲಿ ಏನು ಸಮಸ್ಯೆ ಕಾಣುತ್ತಿದೆ? ಎಲೆ, ಕಾಯಿ, ಅಥವಾ ಗಿಡದ ಬಗ್ಗೆ ಹೇಳಿ."],
     "ask_stage": ["ಬೆಳೆ ಯಾವ ಹಂತದಲ್ಲಿದೆ? ಸಸಿ, ಹೂ ಬಿಡುವ ಹಂತ, ಅಥವಾ ಕಾಳು ಕಟ್ಟುವ ಹಂತ?"],
@@ -82,6 +83,12 @@ T = {
         "ಕೃಷಿ ಮಿತ್ರ ಪ್ರಸ್ತುತ ಪ್ರಾಯೋಗಿಕ ಹಂತದಲ್ಲಿದ್ದು, ಭತ್ತ, ಅಡಿಕೆ ಮತ್ತು ತೆಂಗು ಬೆಳೆಗಳ ಆಯ್ದ ಸಮಸ್ಯೆಗಳಿಗೆ ಪ್ರಾಥಮಿಕ ಮಾಹಿತಿ ನೀಡಬಲ್ಲದು.",
         "ಇದು ತಜ್ಞರು ಪರಿಶೀಲಿಸಿದ ಪೂರ್ಣ ಸಲಹೆ ಅಲ್ಲ, ಮತ್ತು ರಾಸಾಯನಿಕ ಔಷಧಗಳ ಶಿಫಾರಸು ಸದ್ಯಕ್ಕೆ ಲಭ್ಯವಿಲ್ಲ.",
         "ನಿಮ್ಮ ಬೆಳೆ ಮತ್ತು ಕಾಣುತ್ತಿರುವ ಲಕ್ಷಣಗಳನ್ನು ಹೇಳಿ, ಹೇಗೆ ಸಹಾಯ ಮಾಡಲಿ?",
+    ],
+    # REVIEW: Human review of Kannada wording when crop is unsupported in KB
+    "unsupported_crop": [
+        "ಕ್ಷಮಿಸಿ, {crop} ಬೆಳೆಗೆ ಪರಿಹಾರ ಅಥವಾ ಚಿಕಿತ್ಸಾ ಸಲಹೆ ಸದ್ಯಕ್ಕೆ ನನ್ನಲ್ಲಿ ಲಭ್ಯವಿಲ್ಲ.",
+        "ಹೆಚ್ಚಿನ ಮಾಹಿತಿಗಾಗಿ ದಯವಿಟ್ಟು ಹತ್ತಿರದ ಕೃಷಿ ಅಧಿಕಾರಿ ಅಥವಾ ಕೃಷಿ ವಿಜ್ಞಾನ ಕೇಂದ್ರವನ್ನು ಸಂಪರ್ಕಿಸಿ.",
+        "ಪ್ರಸ್ತುತ ನಮ್ಮಲ್ಲಿ {supported_crops} ಬೆಳೆಗಳಿಗೆ ಸಹಾಯ ಲಭ್ಯವಿದೆ. ನೀವು ಇವುಗಳಲ್ಲಿ ಯಾವುದಾದರೂ ಬೆಳೆಯ ಬಗ್ಗೆ ಕೇಳಲು ಬಯಸುತ್ತೀರಾ?",
     ],
     # REVIEW: Human review of Kannada wording when no previous advisory exists to replay
     "no_previous_advisory": [
@@ -739,9 +746,26 @@ class Session:
                 meta={"state": "followup_options", "crop": self.crop}
             ))
 
-        # 8. Slot clarification or advisory
+        # 8. Unsupported crop check or slot clarification / advisory
         if not self.crop:
             return self._ask("crop")
+
+        if self.crop not in usable_crops():
+            active_crops_kn = [CROP_KN.get(c, c) for c in usable_crops()]
+            supp_str = " ಮತ್ತು ".join([", ".join(active_crops_kn[:-1]), active_crops_kn[-1]]) if len(active_crops_kn) > 1 else "".join(active_crops_kn)
+            crop_name_kn = CROP_KN.get(self.crop, self.crop)
+            sentences = [
+                T["unsupported_crop"][0].format(crop=crop_name_kn),
+                T["unsupported_crop"][1],
+                T["unsupported_crop"][2].format(supported_crops=supp_str),
+            ]
+            sms_crop = crop_name_kn or "ಬೆಳೆ"
+            return self._remember(Reply(
+                sentences,
+                sms=f"ಕೃಷಿ ಮಿತ್ರ: {sms_crop} ಬೆಳೆಗೆ ಸಲಹೆ ಸದ್ಯಕ್ಕೆ ಲಭ್ಯವಿಲ್ಲ. ಹತ್ತಿರದ ಕೃಷಿ ಅಧಿಕಾರಿಯನ್ನು ಸಂಪರ್ಕಿಸಿ. {self.esc}",
+                meta={"state": "unsupported_crop", "crop": self.crop}
+            ))
+
         if not self.problem:
             return self._ask("problem")
         if self.problem == "paddy_leaf_folder" and any(k in t for k in ["ಔಷಧ", "ಔಷಧಿ", "ಸಿಂಪಡಿಸ", "ರಾಸಾಯನಿಕ", "chemical", "spray", "pesticide"]):

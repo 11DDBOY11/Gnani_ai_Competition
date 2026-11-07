@@ -1,5 +1,5 @@
 """Regression tests for dialogue repair based on live conversation failure."""
-from app.dialogue import Session, find_problem, find_crop, is_disease_negated, is_low_yield, KB, usable_crops
+from app.dialogue import Session, find_problem, find_crop, is_disease_negated, is_low_yield, KB, usable_crops, T
 
 
 def test_incomplete_crop_generic_rot_clarifies_not_arecanut():
@@ -694,6 +694,99 @@ def test_kb_paddy_leaf_folder_draft_evidence_record_structure():
     assert "toxic to silkworms" in draft["silkworm_mulberry_warning"].lower()
     assert "prevent drift" in draft["silkworm_mulberry_warning"].lower()
     assert "application policy" in draft["silkworm_mulberry_warning"].lower()
+
+
+def test_unsupported_crop_four_utterances_diagnosis():
+    """Verify the exact four-utterance sequence from diagnosis handles unsupported crop gracefully without symptom loops or auto-escalation."""
+    s = Session()
+    # Turn 1: "ನಾನು ಕಬ್ಬಿಗೆ ರೋಗ ಬಂದಿದೆ, ಏನು ಮಾಡಬೇಕು?"
+    r1 = s.respond("ನಾನು ಕಬ್ಬಿಗೆ ರೋಗ ಬಂದಿದೆ, ಏನು ಮಾಡಬೇಕು?")
+    assert r1.meta["state"] == "unsupported_crop"
+    assert s.crop == "sugarcane"
+    assert not r1.end
+    t1 = " ".join(r1.sentences)
+    assert "ಕಬ್ಬು ಬೆಳೆಗೆ ಪರಿಹಾರ ಅಥವಾ ಚಿಕಿತ್ಸಾ ಸಲಹೆ ಸದ್ಯಕ್ಕೆ ನನ್ನಲ್ಲಿ ಲಭ್ಯವಿಲ್ಲ" in t1
+    assert "ಕೃಷಿ ಅಧಿಕಾರಿ ಅಥವಾ ಕೃಷಿ ವಿಜ್ಞಾನ ಕೇಂದ್ರವನ್ನು ಸಂಪರ್ಕಿಸಿ" in t1
+    assert "ಭತ್ತ, ಅಡಿಕೆ ಮತ್ತು ತೆಂಗು" in t1
+    assert "ಬೆಳೆಯಲ್ಲಿ ಏನು ಸಮಸ್ಯೆ ಕಾಣುತ್ತಿದೆ" not in t1
+
+    # Turn 2: "ನಮ್ಮದು ಕಬ್ಬು."
+    r2 = s.respond("ನಮ್ಮದು ಕಬ್ಬು.")
+    assert r2.meta["state"] == "unsupported_crop"
+    assert not r2.end
+    assert "ಕಬ್ಬು ಬೆಳೆಗೆ ಪರಿಹಾರ" in " ".join(r2.sentences)
+    assert "ಬೆಳೆಯಲ್ಲಿ ಏನು ಸಮಸ್ಯೆ ಕಾಣುತ್ತಿದೆ" not in " ".join(r2.sentences)
+
+    # Turn 3: "ನನ್ನ ಕಬ್ಬಿನ ಬೆಳೆಯಲ್ಲಿ ರೋಗ ಬಂದಿದೆ, ಏನು ಮಾಡಲಿ?"
+    r3 = s.respond("ನನ್ನ ಕಬ್ಬಿನ ಬೆಳೆಯಲ್ಲಿ ರೋಗ ಬಂದಿದೆ, ಏನು ಮಾಡಲಿ?")
+    assert r3.meta["state"] == "unsupported_crop"
+    assert not r3.end
+    assert "ಬೆಳೆಯಲ್ಲಿ ಏನು ಸಮಸ್ಯೆ ಕಾಣುತ್ತಿದೆ" not in " ".join(r3.sentences)
+
+    # Turn 4: "ಕಬ್ಬಿನ ಬೇರಿಗೆ ರೋಗ ಬಂದಿದೆ, ಏನು ಮಾಡಬೇಕು?"
+    r4 = s.respond("ಕಬ್ಬಿನ ಬೇರಿಗೆ ರೋಗ ಬಂದಿದೆ, ಏನು ಮಾಡಬೇಕು?")
+    assert r4.meta["state"] == "unsupported_crop"
+    assert not r4.end
+    assert r4.meta.get("safety") != "escalated"
+    assert s.asks["problem"] == 0
+
+
+def test_unsupported_crop_to_supported_crop_continuation():
+    """Farmer can freely switch from unsupported crop (sugarcane) to supported crop (paddy)."""
+    s = Session()
+    r1 = s.respond("ಕಬ್ಬಿಗೆ ರೋಗ ಬಂದಿದೆ")
+    assert r1.meta["state"] == "unsupported_crop"
+    assert s.crop == "sugarcane"
+
+    # Switch to supported crop with specific problem
+    r2 = s.respond("ನನ್ನ ಭತ್ತದ ಗದ್ದೆಯಲ್ಲಿ ಬೆಂಕಿ ರೋಗ ಬಂದಿದೆ")
+    assert r2.meta["state"] == "advised"
+    assert s.crop == "paddy"
+    assert s.problem == "paddy_blast"
+    assert "ಭತ್ತ ಬೆಳೆಯ ಬೆಂಕಿ ರೋಗ ಬಗ್ಗೆ ಕೇಳುತ್ತಿದ್ದೀರಿ" in " ".join(r2.sentences)
+
+
+def test_explicit_end_after_unsupported_response():
+    """Farmer can explicitly end call after receiving unsupported crop response."""
+    s = Session()
+    r1 = s.respond("ಕಬ್ಬಿಗೆ ರೋಗ ಬಂದಿದೆ")
+    assert r1.meta["state"] == "unsupported_crop"
+    assert not r1.end
+
+    r2 = s.respond("ಧನ್ಯವಾದಗಳು, ನೀವು ಕರೆಯನ್ನು ಕಟ್ ಮಾಡಬಹುದು.")
+    assert r2.meta["state"] == "bye"
+    assert r2.end is True
+
+
+def test_unsupported_crop_switch_has_no_stale_previous_crop_advice():
+    """Switching to unsupported crop clears earlier advice reference and prevents stale advisory replay."""
+    s = Session()
+    r1 = s.respond("ಭತ್ತ ಬೆಂಕಿ ರೋಗ")
+    assert r1.meta["state"] == "advised"
+    assert s.last_advisory is not None
+
+    # Switch to unsupported crop
+    r2 = s.respond("ಕಬ್ಬಿಗೆ ರೋಗ ಬಂದಿದೆ")
+    assert r2.meta["state"] == "unsupported_crop"
+    assert s.crop == "sugarcane"
+    assert s.last_advisory is None
+
+    # General repeat repeats the unsupported crop message, NOT blast advice
+    r3 = s.respond("ಮತ್ತೆ ಹೇಳಿ")
+    assert r3.meta["state"] == "unsupported_crop"
+    assert r3.sentences == r2.sentences
+    assert "ಬೆಂಕಿ ರೋಗ" not in " ".join(r3.sentences)
+
+    # Specific previous advisory replay states no advisory exists
+    r4 = s.respond("ಹಿಂದಿನ ಸಲಹೆಯನ್ನು ಮತ್ತೆ ಹೇಳಿ")
+    assert r4.meta["state"] == "no_previous_advisory"
+    assert "ಬೆಂಕಿ ರೋಗ" not in " ".join(r4.sentences)
+
+
+def test_greeting_privacy_statement_audio_not_recorded_text_logged():
+    """Initial greeting accurately reflects that audio is not recorded and conversation text is logged."""
+    assert "ಧ್ವನಿಯನ್ನು ರೆಕಾರ್ಡ್ ಮಾಡುವುದಿಲ್ಲ" in T["greeting"][1]
+    assert "ಸಂಭಾಷಣೆಯ ಪಠ್ಯವನ್ನು ದಾಖಲಿಸಿಕೊಳ್ಳಲಾಗುತ್ತದೆ" in T["greeting"][1]
 
 
 

@@ -68,7 +68,7 @@ class Call:
         await self.ws.send_json({"type": "transcript", "text": text, "stt_latency_ms": stt_latency, "lang": lang})
         r = self.session.respond(text)
         self.turns[-1]["meta"] = r.meta
-        if r.sms and self.phone and r.meta.get("safety") != "escalated":
+        if r.sms and self.phone and r.meta.get("safety") != "escalated" and not r.meta.get("repeated"):
             queue_sms(self.id, self.phone[-4:], r.sms)
         await self.say(r.sentences, t0)
         if r.end:

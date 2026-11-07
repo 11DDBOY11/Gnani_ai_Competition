@@ -1,6 +1,8 @@
-import os
+import os, pathlib
 try:
     from dotenv import load_dotenv
+    _root = pathlib.Path(__file__).resolve().parent.parent
+    load_dotenv(_root / ".env")
     load_dotenv()
 except ImportError:
     pass
@@ -9,10 +11,15 @@ except ImportError:
 class Config:
     def __init__(self):
         e = os.environ.get
-        self.api_key = e("GNANI_API_KEY", "")
+        k = e("GNANI_API_KEY", "").strip()
+        if (k.startswith('"') and k.endswith('"')) or (k.startswith("'") and k.endswith("'")):
+            k = k[1:-1].strip()
+        if k.lower().startswith("bearer "):
+            k = k[7:].strip()
+        self.api_key = k
         self.stt_url = "wss://api.vachana.ai/stt/v3/stream"
         self.tts_url = "wss://api.vachana.ai/api/v1/tts"
-        self.stt_language = e("STT_LANGUAGE", "kn-IN,en-IN")
+        self.stt_language = e("STT_LANGUAGE", "kn-IN")
         self.tts_model = e("TTS_MODEL", "timbre-v3.0")
         self.tts_voice = e("TTS_VOICE", "Lakshmi")
         self.tts_speed = float(e("TTS_SPEED", "0.95"))

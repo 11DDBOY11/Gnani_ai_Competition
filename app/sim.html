@@ -1,44 +1,151 @@
 <!doctype html><meta charset="utf-8"><title>Krishi Mitra - phone simulator</title>
-<style>body{font-family:system-ui;max-width:640px;margin:2rem auto;padding:0 1rem}button{font-size:1.1rem;padding:.7rem 1.4rem;margin-right:.5rem}
-#log div{padding:.4rem .6rem;margin:.3rem 0;border-radius:6px}.f{background:#e8f5e9}.b{background:#e3f2fd}.e{background:#ffebee}</style>
+<style>
+  body{font-family:system-ui;max-width:640px;margin:2rem auto;padding:0 1rem}
+  button{font-size:1.1rem;padding:.7rem 1.4rem;margin-right:.5rem;cursor:pointer}
+  button:disabled{cursor:not-allowed;opacity:0.6}
+  input[type="password"]{font-size:1rem;padding:.5rem .7rem;margin-right:.5rem;border:1px solid #ccc;border-radius:4px;width:180px}
+  .token-box{margin:1rem 0;padding:.8rem;background:#f9f9f9;border:1px solid #e0e0e0;border-radius:6px}
+  .warn{font-size:.85rem;color:#666;margin-top:.4rem}
+  #log div{padding:.5rem .7rem;margin:.4rem 0;border-radius:6px;word-break:break-word}
+  .f{background:#e8f5e9}
+  .b{background:#e3f2fd}
+  .e{background:#ffebee;color:#c62828;font-weight:500}
+  .info{background:#fff3e0;color:#e65100}
+</style>
 <h2>Krishi Mitra - phone simulator</h2>
-<p>Test only. Sends your laptop mic as 8 kHz phone-quality audio to the same pipeline a real call would use. Use headphones to avoid echo.</p>
+<p>Test only. Sends your microphone audio as 8 kHz phone-quality PCM to the live advisory pipeline. Use headphones to prevent echo.</p>
+
+<div class="token-box">
+  <label for="tok">CALL_TOKEN (optional): </label>
+  <input type="password" id="tok" placeholder="leave blank if none" autocomplete="off">
+  <div class="warn">Note: Query-string tokens may be visible in local/infrastructure server access logs. This input is for local testing only and is not persisted or logged.</div>
+</div>
+
 <button id="call">Call</button><button id="hang" disabled>Hang up</button> <span id="st"></span>
 <div id="log"></div>
+
 <script>
 const log=(c,t)=>{const d=document.createElement('div');d.className=c;d.textContent=t;document.getElementById('log').prepend(d)};
-let ws,ctx,proc,stream,nextT=0,carry=null;const R=8000;
+let ws,ctx,proc,srcNode,stream,nextT=0,carry=null;
+const R=8000;
+
 document.getElementById('call').onclick=async()=>{
-  const phone=new URLSearchParams(location.search).get('phone')||'';
-  ws=new WebSocket((location.protocol==='https:'?'wss://':'ws://')+location.host+'/ws/call'+(phone?'?phone='+phone:''));
-  ws.binaryType='arraybuffer';
-  ctx=new AudioContext();await ctx.resume();nextT=0;
-  stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:false,channelCount:1}});
-  const src=ctx.createMediaStreamSource(stream);proc=ctx.createScriptProcessor(4096,1,1);
-  let acc=[],pos=0;const ratio=ctx.sampleRate/R;
-  proc.onaudioprocess=e=>{
-    if(!ws||ws.readyState!==1)return;const x=e.inputBuffer.getChannelData(0);
-    for(let i=0;i<x.length;i++){acc.push(x[i]);}
-    const out=[];while(pos+ratio<=acc.length){let s=0,n=0;for(let k=Math.floor(pos);k<Math.floor(pos+ratio);k++){s+=acc[k];n++}
-      out.push(Math.max(-1,Math.min(1,s/(n||1)))*32767);pos+=ratio}
-    const drop=Math.floor(pos);acc=acc.slice(drop);pos-=drop;
-    if(out.length)ws.send(Int16Array.from(out).buffer)};
-  src.connect(proc);proc.connect(ctx.destination);
-  ws.onmessage=ev=>{
-    if(typeof ev.data!=='string'){
-      let u=new Uint8Array(ev.data);
-      if(carry){const t=new Uint8Array(u.length+1);t[0]=carry[0];t.set(u,1);u=t;carry=null}
-      if(u.length&1){carry=[u[u.length-1]];u=u.slice(0,u.length-1)}
-      const i16=new Int16Array(u.buffer,u.byteOffset,u.length>>1);
-      const f=new Float32Array(i16.length);for(let i=0;i<i16.length;i++)f[i]=i16[i]/32768;
-      const b=ctx.createBuffer(1,f.length,R);b.copyToChannel(f,0);const s=ctx.createBufferSource();s.buffer=b;s.connect(ctx.destination);
-      nextT=Math.max(nextT,ctx.currentTime+0.05);s.start(nextT);nextT+=b.duration;return}
-    const m=JSON.parse(ev.data);
-    if(m.type==='transcript')log('f','Farmer: '+m.text+'  ('+m.stt_latency_ms+' ms STT)');
-    else if(m.type==='reply')log('b','Bot: '+m.text+'  [first audio '+m.first_audio_ms+' ms after transcript]');
-    else if(m.type==='error')log('e','ERROR '+m.where+': '+m.message)};
-  ws.onclose=()=>{document.getElementById('st').textContent='call ended';document.getElementById('hang').click()};
-  document.getElementById('hang').disabled=false;document.getElementById('st').textContent='in call';
+  const callBtn=document.getElementById('call');
+  const hangBtn=document.getElementById('hang');
+  const stSpan=document.getElementById('st');
+  const tokInput=document.getElementById('tok');
+
+  callBtn.disabled=true;
+  stSpan.textContent='connecting...';
+
+  try {
+    const params=new URLSearchParams(location.search);
+    const phone=params.get('phone')||'';
+    const enteredToken=tokInput?tokInput.value.trim():'';
+    if(phone) params.set('phone', phone);
+    if(enteredToken) params.set('token', enteredToken);
+    else params.delete('token');
+
+    const qs=params.toString();
+    const wsUrl=(location.protocol==='https:'?'wss://':'ws://')+location.host+'/ws/call'+(qs?'?'+qs:'');
+
+    ws=new WebSocket(wsUrl);
+    ws.binaryType='arraybuffer';
+
+    ws.onerror=(err)=>{
+      log('e','Connection error: unable to establish WebSocket connection to server.');
+    };
+
+    ws.onclose=(ev)=>{
+      let reason='';
+      if(ev.code===4401) reason=' (4401: Invalid or missing CALL_TOKEN)';
+      else if(ev.code===4403) reason=' (4403: Server at maximum call capacity)';
+      else if(ev.code===1006) reason=' (Connection closed abnormally/refused)';
+      else if(ev.code!==1000) reason=' (code: '+ev.code+')';
+
+      stSpan.textContent='call ended'+reason;
+      log('info','Call disconnected'+reason);
+      cleanup();
+    };
+
+    ctx=new (window.AudioContext||window.webkitAudioContext)();
+    await ctx.resume();
+    nextT=0;
+    carry=null;
+
+    stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:false,channelCount:1}});
+    srcNode=ctx.createMediaStreamSource(stream);
+    proc=ctx.createScriptProcessor(4096,1,1);
+
+    let acc=[],pos=0;const ratio=ctx.sampleRate/R;
+    proc.onaudioprocess=e=>{
+      if(!ws||ws.readyState!==1)return;
+      // Do not forward mic audio while bot playback is still scheduled
+      if(ctx.currentTime<nextT)return;
+
+      const x=e.inputBuffer.getChannelData(0);
+      for(let i=0;i<x.length;i++){acc.push(x[i]);}
+      const out=[];
+      while(pos+ratio<=acc.length){
+        let s=0,n=0;
+        for(let k=Math.floor(pos);k<Math.floor(pos+ratio);k++){s+=acc[k];n++;}
+        out.push(Math.max(-1,Math.min(1,s/(n||1)))*32767);
+        pos+=ratio;
+      }
+      const drop=Math.floor(pos);
+      acc=acc.slice(drop);
+      pos-=drop;
+      if(out.length) ws.send(Int16Array.from(out).buffer);
+    };
+
+    srcNode.connect(proc);
+    proc.connect(ctx.destination);
+
+    ws.onmessage=ev=>{
+      if(typeof ev.data!=='string'){
+        let u=new Uint8Array(ev.data);
+        if(carry){const t=new Uint8Array(u.length+1);t[0]=carry[0];t.set(u,1);u=t;carry=null;}
+        if(u.length&1){carry=[u[u.length-1]];u=u.slice(0,u.length-1);}
+        const i16=new Int16Array(u.buffer,u.byteOffset,u.length>>1);
+        const f=new Float32Array(i16.length);
+        for(let i=0;i<i16.length;i++)f[i]=i16[i]/32768;
+        const b=ctx.createBuffer(1,f.length,R);
+        b.copyToChannel(f,0);
+        const s=ctx.createBufferSource();
+        s.buffer=b;
+        s.connect(ctx.destination);
+        nextT=Math.max(nextT,ctx.currentTime+0.05);
+        s.start(nextT);
+        nextT+=b.duration;
+        return;
+      }
+      const m=JSON.parse(ev.data);
+      if(m.type==='transcript')log('f','Farmer: '+m.text+'  ('+(m.stt_latency_ms||0)+' ms STT)');
+      else if(m.type==='reply')log('b','Bot: '+m.text+'  [first audio '+(m.first_audio_ms||0)+' ms after transcript]');
+      else if(m.type==='error')log('e','ERROR '+(m.where||'')+': '+(m.message||'Unknown error'));
+    };
+
+    hangBtn.disabled=false;
+    stSpan.textContent='in call';
+  } catch(err) {
+    log('e','Initialization error: '+(err.message||err));
+    cleanup();
+  }
 };
-document.getElementById('hang').onclick=()=>{try{ws&&ws.close()}catch(e){};try{stream&&stream.getTracks().forEach(t=>t.stop())}catch(e){};try{proc&&proc.disconnect()}catch(e){};document.getElementById('hang').disabled=true};
+
+function cleanup(){
+  try{if(ws&&(ws.readyState===0||ws.readyState===1))ws.close();}catch(e){}
+  try{if(stream)stream.getTracks().forEach(t=>t.stop());}catch(e){}
+  try{if(srcNode)srcNode.disconnect();}catch(e){}
+  try{if(proc)proc.disconnect();}catch(e){}
+  try{if(ctx&&ctx.state!=='closed')ctx.close();}catch(e){}
+  ws=null;stream=null;srcNode=null;proc=null;ctx=null;nextT=0;carry=null;
+  document.getElementById('hang').disabled=true;
+  document.getElementById('call').disabled=false;
+}
+
+document.getElementById('hang').onclick=()=>{
+  document.getElementById('st').textContent='call ended';
+  cleanup();
+};
 </script>

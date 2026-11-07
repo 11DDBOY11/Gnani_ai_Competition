@@ -1,9 +1,33 @@
+# Environment and secrets
 .env
+.env.*
+!.env.example
+
+# Virtual environment
 .venv/
+venv/
+ENV/
+
+# Python byte-code and caches
 __pycache__/
 *.py[cod]
-cache/tts/
-logs/*.jsonl
-out/
+*$py.class
+.pytest_cache/
+
+# Audio recordings and media
+audio/
 *.pcm
 *.wav
+*.mp3
+*.ogg
+*.flac
+
+# Local cache and temporary output
+cache/
+out/
+reports/
+
+# Logs
+logs/
+*.log
+

@@ -1,0 +1,29 @@
+services:
+  - type: web
+    name: krishi-mitra
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: python -m uvicorn app.server:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: GNANI_API_KEY
+        sync: false
+      - key: CALL_TOKEN
+        sync: false
+      - key: STT_LANGUAGE
+        value: kn-IN
+      - key: TTS_MODEL
+        value: timbre-v3.0
+      - key: TTS_VOICE
+        value: Lakshmi
+      - key: TTS_SPEED
+        value: "0.95"
+      - key: SAMPLE_RATE
+        value: "8000"
+      - key: MAX_CALLS
+        value: "3"
+      - key: ESCALATION_NUMBER
+        value: 1800-180-1551
+

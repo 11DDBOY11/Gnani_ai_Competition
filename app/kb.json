@@ -22,13 +22,35 @@
       ],
       "chemical": {
         "reviewed": false,
-        "product": null,
-        "dose": null,
-        "water": null,
-        "preharvest_days": null,
-        "source": null,
+        "product": "ಕ್ಲೋರಾಂಟ್ರಾನಿಲಿಪ್ರೋಲ್ ೧೮.೫% ಎಸ್.ಸಿ.",
+        "dose": "೧೫೦ ಮಿಲಿ/ಹೆಕ್ಟೇರ್",
+        "water": "೫೦೦ ಲೀಟರ್/ಹೆಕ್ಟೇರ್",
+        "preharvest_days": "೪೭",
+        "source": "https://ppqs.gov.in/sites/default/files/chlorantraniliprole_18.5_sc93ffmc_india_private_limited_1.pdf",
         "reviewed_by": null,
-        "review_date": null
+        "review_date": null,
+        "draft_evidence": {
+          "status": "DRAFT - NOT ENABLED - PROFESSIONAL REVIEW PENDING",
+          "active_ingredient": "Chlorantraniliprole",
+          "formulation": "18.5% w/w SC",
+          "registrant": "FMC India Private Limited",
+          "target_crop": "Rice",
+          "target_pest": "Leaf folder (Cnaphalocrocis medinalis), Stem borer (Scirpophaga incertulas)",
+          "dose_original_units": "150 ml/ha (30 g a.i./ha)",
+          "dilution_original_units": "500 L water/ha",
+          "preharvest_interval_days": 47,
+          "source_url": "https://ppqs.gov.in/sites/default/files/chlorantraniliprole_18.5_sc93ffmc_india_private_limited_1.pdf",
+          "re_entry_conditions": "Do not enter treated areas for at least 24 hours AND until sprays have dried.",
+          "ppe_requirements": [
+            "Protective clothing (long-sleeved shirt and long pants)",
+            "Chemical-resistant gloves",
+            "Mask",
+            "Goggles",
+            "Covered shoes"
+          ],
+          "silkworm_mulberry_warning": "Toxic to silkworms; prevent drift to nearby mulberry plantations and silkworm facilities. Application policy conservatively blocks this candidate when such facilities are nearby.",
+          "environmental_precautions": "Toxic to aquatic invertebrates; avoid drift or runoff to water bodies."
+        }
       }
     },
     {

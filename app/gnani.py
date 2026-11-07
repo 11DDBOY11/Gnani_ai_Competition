@@ -8,6 +8,11 @@ class TTSError(Exception):
 
 
 def stt_headers(c=cfg) -> dict:
+    if "," in c.stt_language:
+        raise ValueError(
+            f"Invalid STT_LANGUAGE '{c.stt_language}': exactly one locale is required (e.g. 'kn-IN'). "
+            "Multi-locale comma lists are not supported for single-locale streaming."
+        )
     return {
         "x-api-key-id": c.api_key,
         "model": "prisma-v3.0",
@@ -37,10 +42,67 @@ def tts_request(text: str, c=cfg) -> dict:
 class STTStream:
     def __init__(self, c=cfg):
         self.c, self.ws = c, None
+        self.config = None
+        self.request_id = None
+        self._buffered_events = []
 
-    async def open(self):
+    async def open(self, timeout=10.0):
         from websockets.asyncio.client import connect
-        self.ws = await connect(self.c.stt_url, additional_headers=stt_headers(self.c), max_size=None, open_timeout=10)
+        from websockets.exceptions import InvalidStatus, ConnectionClosed
+        try:
+            self.ws = await connect(self.c.stt_url, additional_headers=stt_headers(self.c), max_size=None, open_timeout=10)
+        except InvalidStatus as e:
+            code = getattr(getattr(e, "response", None), "status_code", getattr(e, "status_code", None))
+            if code in (401, 403) or "401" in str(e) or "403" in str(e):
+                raise RuntimeError("Gnani rejected the API key (HTTP 401). Run python -m scripts.check_key") from None
+            raise
+
+        last_error = None
+        try:
+            deadline = asyncio.get_event_loop().time() + timeout
+            while asyncio.get_event_loop().time() < deadline:
+                remaining = max(deadline - asyncio.get_event_loop().time(), 0.1)
+                try:
+                    raw = await asyncio.wait_for(self.ws.recv(), timeout=remaining)
+                except asyncio.TimeoutError:
+                    break
+                except ConnectionClosed as e:
+                    code = getattr(self.ws, "close_code", None) or getattr(getattr(e, "rcvd", None), "code", None) or getattr(e, "code", None)
+                    reason = getattr(self.ws, "close_reason", "") or getattr(getattr(e, "rcvd", None), "reason", "") or getattr(e, "reason", "")
+                    err_info = f" (server message: {last_error})" if last_error else ""
+                    await self.close()
+                    raise RuntimeError(f"STT socket closed before readiness: code={code}, reason='{reason}'{err_info}") from None
+
+                if isinstance(raw, (bytes, bytearray)):
+                    raw = raw.decode("utf-8", errors="replace")
+                msg = json.loads(raw) if isinstance(raw, str) else raw
+                m_type = msg.get("type")
+                if m_type == "connected":
+                    self.config = msg.get("config")
+                    self.request_id = msg.get("request_id")
+                    return
+                elif m_type == "error":
+                    last_error = msg.get("message", "unknown stt error")
+                    code = getattr(self.ws, "close_code", None)
+                    reason = getattr(self.ws, "close_reason", "")
+                    try:
+                        await asyncio.wait_for(self.ws.recv(), timeout=0.5)
+                    except ConnectionClosed as cc:
+                        code = getattr(self.ws, "close_code", None) or getattr(getattr(cc, "rcvd", None), "code", None) or getattr(cc, "code", None)
+                        reason = getattr(self.ws, "close_reason", "") or getattr(getattr(cc, "rcvd", None), "reason", "") or getattr(cc, "reason", "")
+                    except Exception:
+                        pass
+                    await self.close()
+                    code_info = f" (close code={code}, reason='{reason}')" if code else ""
+                    raise RuntimeError(f"STT initialization failed: {last_error}{code_info}")
+                else:
+                    self._buffered_events.append(msg)
+
+            await self.close()
+            raise TimeoutError("Timed out waiting for initial STT server response")
+        except Exception:
+            await self.close()
+            raise
 
     async def send(self, pcm: bytes):
         await self.ws.send(pcm)
@@ -49,6 +111,8 @@ class STTStream:
         await self.ws.send(json.dumps({"type": "commit"}))
 
     async def events(self):
+        while self._buffered_events:
+            yield self._buffered_events.pop(0)
         async for raw in self.ws:
             if isinstance(raw, (bytes, bytearray)):
                 continue
@@ -56,7 +120,11 @@ class STTStream:
 
     async def close(self):
         if self.ws:
-            await self.ws.close()
+            try:
+                await self.ws.close()
+            except Exception:
+                pass
+            self.ws = None
 
 
 class TTS:
@@ -72,8 +140,15 @@ class TTS:
     async def _ensure(self):
         if self.ws is None:
             from websockets.asyncio.client import connect
-            self.ws = await connect(self.c.tts_url, additional_headers={"X-API-Key-ID": self.c.api_key},
-                                    max_size=None, open_timeout=10)
+            from websockets.exceptions import InvalidStatus
+            try:
+                self.ws = await connect(self.c.tts_url, additional_headers={"X-API-Key-ID": self.c.api_key},
+                                        max_size=None, open_timeout=10)
+            except InvalidStatus as e:
+                code = getattr(getattr(e, "response", None), "status_code", getattr(e, "status_code", None))
+                if code in (401, 403) or "401" in str(e) or "403" in str(e):
+                    raise RuntimeError("Gnani rejected the API key (HTTP 401). Run python -m scripts.check_key") from None
+                raise
 
     async def _stream(self, text):
         async with self.lock:
@@ -136,23 +211,54 @@ async def transcribe_pcm(pcm: bytes, c=cfg, tail_silence_s=1.5, wait_s=8.0):
     frame, step = 1024, 1024 / 2 / c.sample_rate
     loop = asyncio.get_event_loop()
     out, last = [], [loop.time()]
+    fatal_error = None
+    task = None
 
     async def rx():
+        nonlocal fatal_error
         async for ev in stt.events():
-            if ev.get("type") in ("transcript", "error"):
+            t = ev.get("type")
+            if t in ("transcript", "error"):
                 out.append(ev)
                 last[0] = loop.time()
+                if t == "error":
+                    fatal_error = ev.get("message", "stt error")
+                    break
 
-    task = asyncio.create_task(rx())
-    pcm = pcm + bytes(int(tail_silence_s * c.sample_rate * 2))
-    for i in range(0, len(pcm), frame):
-        await stt.send(pcm[i:i + frame].ljust(frame, b"\x00"))
-        await asyncio.sleep(step)
-    end = loop.time() + wait_s
-    while loop.time() < end:
-        await asyncio.sleep(0.25)
-        if out and loop.time() - last[0] > 2.0:
-            break
-    task.cancel()
-    await stt.close()
+    try:
+        task = asyncio.create_task(rx())
+        pcm = pcm + bytes(int(tail_silence_s * c.sample_rate * 2))
+        for i in range(0, len(pcm), frame):
+            if task.done() or fatal_error:
+                break
+            await stt.send(pcm[i:i + frame].ljust(frame, b"\x00"))
+            await asyncio.sleep(step)
+
+        if not fatal_error and not task.done():
+            end = loop.time() + wait_s
+            while loop.time() < end:
+                if task.done() or fatal_error:
+                    break
+                await asyncio.sleep(0.25)
+                if out and loop.time() - last[0] > 2.0:
+                    break
+
+        if fatal_error:
+            raise RuntimeError(f"STT server error: {fatal_error}")
+
+        if task.done() and task.exception():
+            raise task.exception()
+
+    finally:
+        if task and not task.done():
+            task.cancel()
+        if task:
+            try:
+                await task
+            except asyncio.CancelledError:
+                pass
+            except Exception:
+                pass
+        await stt.close()
+
     return out

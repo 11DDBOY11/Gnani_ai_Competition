@@ -8,7 +8,8 @@
     python -m scripts.smoke     # 1 TTS + 1 STT call
     python -m scripts.prewarm_cache
     uvicorn app.server:app --port 8000
-    open http://localhost:8000  # phone simulator
+    open http://localhost:8000       # public landing page
+    open http://localhost:8000/sim   # browser phone simulator
 
 Chemical advice is OFF until an agronomist fills a `chemical` block in app/kb.json and sets reviewed=true.
 Have a native Kannada speaker proofread all Kannada text.

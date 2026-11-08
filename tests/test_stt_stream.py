@@ -1,4 +1,4 @@
-﻿"""Offline unit tests for STTStream and transcribe_pcm error handling."""
+"""Offline unit tests for STTStream and transcribe_pcm error handling."""
 import asyncio
 import json
 import pytest
@@ -234,7 +234,7 @@ def test_sim_html_contains_token_support_and_ui_elements():
     from app.server import app
 
     client = TestClient(app)
-    resp = client.get("/")
+    resp = client.get("/sim")
     assert resp.status_code == 200
     html = resp.text
 

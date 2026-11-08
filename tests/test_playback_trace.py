@@ -1,4 +1,4 @@
-﻿"""Trace-field and explicit-restart checks; these do not assert browser audio playback."""
+"""Trace-field and explicit-restart checks; these do not assert browser audio playback."""
 import json
 import logging
 
@@ -55,7 +55,7 @@ def test_timeout_trace_has_response_ids_and_restart_is_explicit(monkeypatch, tmp
 
 def test_simulator_contains_playback_trace_fields_without_claiming_audio_verification():
     """The served page exposes the requested trace points and has no reconnect path."""
-    html = TestClient(server.app).get("/").text
+    html = TestClient(server.app).get("/sim").text
     for event in (
         "atomic_audio_started",
         "audio_source_onended",

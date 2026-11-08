@@ -1,0 +1,402 @@
+﻿<!DOCTYPE html>
+<html lang="kn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ಕೃಷಿ ಮಿತ್ರ | Krishi Mitra</title>
+<style>
+:root{
+  --green:#166534; --leaf:#22c55e; --deep:#052e16; --gold:#facc15;
+  --cream:#fffbeb; --sky:#e0f2fe; --ink:#0f172a; --red:#dc2626;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Noto Sans Kannada','Nirmala UI',system-ui,sans-serif;background:linear-gradient(180deg,#f0fdf4,#ecfdf5 45%,#fffbeb);color:var(--ink);overflow-x:hidden}
+a{color:inherit}
+.wrap{max-width:1180px;margin:auto;padding:0 20px}
+
+/* Language toggle */
+.lang-bar{position:fixed;top:14px;right:16px;z-index:50;display:flex;gap:6px;background:#ffffffd9;border:1px solid #bbf7d0;padding:6px;border-radius:999px;box-shadow:0 8px 24px #0002;backdrop-filter:blur(8px)}
+.lang-btn{border:0;background:transparent;padding:8px 14px;border-radius:999px;font-weight:800;cursor:pointer;font-size:14px}
+.lang-btn.active{background:var(--green);color:#fff}
+
+/* Hero */
+header{position:relative;min-height:92vh;display:grid;place-items:center;text-align:center;padding:96px 0 70px;overflow:hidden}
+.sky{position:absolute;inset:0;background:linear-gradient(180deg,#dbeafe 0%,#eff6ff 35%,#f0fdf4 100%)}
+.sun{position:absolute;top:7%;left:50%;width:130px;height:130px;border-radius:50%;background:radial-gradient(circle,#fde047,#f59e0b);box-shadow:0 0 80px #fbbf2480;animation:float 7s ease-in-out infinite}
+.cloud{position:absolute;background:#fff;filter:blur(.4px);border-radius:100px;opacity:.9;animation:drift 28s linear infinite}
+.cloud:before,.cloud:after{content:"";position:absolute;background:#fff;border-radius:50%}
+.cloud:before{width:55%;height:150%;left:12%;top:-55%}
+.cloud:after{width:40%;height:120%;right:12%;top:-38%}
+.c1{width:170px;height:52px;top:16%;left:-180px}
+.c2{width:130px;height:42px;top:29%;left:-260px;animation-duration:38s}
+.c3{width:210px;height:60px;top:8%;left:-330px;animation-duration:45s}
+@keyframes drift{to{transform:translateX(135vw)}}
+@keyframes float{50%{transform:translateY(-14px)}}
+
+.hero-inner{position:relative;z-index:2}
+.badge{display:inline-flex;align-items:center;gap:8px;background:#ffffffcc;border:1px solid #a7f3d0;color:#065f46;padding:9px 16px;border-radius:999px;font-weight:800;font-size:14px;box-shadow:0 8px 24px #052e1612}
+h1{font-size:clamp(2.4rem,6vw,4.7rem);line-height:1.05;margin:22px 0 16px;color:var(--deep);letter-spacing:-.5px}
+h1 span{background:linear-gradient(90deg,#166534,#16a34a,#ca8a04);-webkit-background-clip:text;background-clip:text;color:transparent}
+.sub{max-width:760px;margin:auto;font-size:clamp(1.05rem,2.2vw,1.35rem);color:#334155}
+.cta-row{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:30px}
+.cta{display:inline-flex;align-items:center;gap:10px;padding:16px 27px;border-radius:999px;font-weight:900;text-decoration:none;border:0;cursor:pointer;transition:.25s;box-shadow:0 14px 30px #052e1622}
+.cta-call{background:linear-gradient(135deg,#16a34a,#15803d);color:#fff;font-size:1.08rem}
+.cta-call:hover{transform:translateY(-3px);box-shadow:0 18px 38px #15803d44}
+.cta-ghost{background:#fff;border:2px solid #16a34a;color:#166534}
+.cta-ghost:hover{background:#f0fdf4;transform:translateY(-3px)}
+.pulse{position:relative}
+.pulse:before{content:"";position:absolute;inset:-7px;border-radius:inherit;border:2px solid #22c55e;animation:pulse 2s infinite}
+@keyframes pulse{0%{transform:scale(.94);opacity:.9}100%{transform:scale(1.16);opacity:0}}
+
+/* Farmer illustration */
+.farmer-scene{margin:44px auto 0;max-width:660px;position:relative}
+.field{height:190px;border-radius:28px;background:linear-gradient(180deg,#bbf7d0,#86efac);position:relative;overflow:hidden;border:3px solid #ffffffaa;box-shadow:0 25px 60px #16653422}
+.hill{position:absolute;bottom:0;width:120%;height:58%;left:-10%;border-radius:50% 50% 0 0;background:linear-gradient(180deg,#4ade80,#16a34a)}
+.crop{position:absolute;bottom:18px}
+.paddy{width:44px;height:64px}
+.paddy .stem{position:absolute;bottom:0;left:50%;width:5px;height:52px;background:#15803d;border-radius:5px;transform:translateX(-50%)}
+.paddy .leaf{position:absolute;bottom:30px;width:30px;height:8px;background:#22c55e;border-radius:99px;transform-origin:left center}
+.paddy .leaf.l{left:14px;transform:rotate(-38deg)}
+.paddy .leaf.r{left:20px;transform:rotate(38deg)}
+.paddy .grain{position:absolute;top:2px;left:50%;width:18px;height:18px;background:#fde047;border-radius:50%;transform:translateX(-50%);box-shadow:0 0 0 4px #fde04755}
+.paddy{animation:sway 3.4s ease-in-out infinite}
+.paddy:nth-child(2){animation-delay:.3s}.paddy:nth-child(3){animation-delay:.6s}.paddy:nth-child(4){animation-delay:.9s}.paddy:nth-child(5){animation-delay:1.2s}
+@keyframes sway{50%{transform:rotate(5deg)}}
+
+.tree{width:76px;height:120px}
+.trunk{position:absolute;bottom:0;left:50%;width:10px;height:58px;background:#92400e;border-radius:8px;transform:translateX(-50%)}
+.crown{position:absolute;top:0;left:50%;transform:translateX(-50%);width:68px;height:58px;background:radial-gradient(circle at 35% 35%,#4ade80,#15803d);border-radius:48% 52% 45% 55%/60% 60% 40% 40%;animation:breathe 4s ease-in-out infinite}
+.coconut .fruit{position:absolute;top:48px;left:50%;width:12px;height:12px;background:#a16207;border-radius:50%;transform:translateX(-50%)}
+.coconut .fruit:nth-child(2){left:38%}.coconut .fruit:nth-child(3){left:62%}
+.areca .trunk{background:#78350f;height:68px}
+.areca .crown{width:78px;height:52px;background:radial-gradient(circle at 35% 35%,#86efac,#15803d)}
+.areca .berry{position:absolute;top:52px;left:50%;width:8px;height:8px;border-radius:50%;background:#dc2626;transform:translateX(-50%)}
+.areca .berry:nth-child(2){left:39%}.areca .berry:nth-child(3){left:61%}
+@keyframes breathe{50%{transform:translateX(-50%) scale(1.05)}}
+
+/* farmer */
+.farmer{position:absolute;right:6%;bottom:0;width:150px;height:190px}
+.body{position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:74px;height:112px;background:linear-gradient(180deg,#0ea5e9,#0369a1);border-radius:34px 34px 14px 14px}
+.head{position:absolute;bottom:104px;left:50%;transform:translateX(-50%);width:48px;height:48px;background:#fcd34d;border-radius:50%}
+.hat{position:absolute;top:-13px;left:50%;transform:translateX(-50%);width:66px;height:22px;background:#166534;border-radius:99px}
+.hat:before{content:"";position:absolute;top:-13px;left:50%;transform:translateX(-50%);width:34px;height:16px;background:#15803d;border-radius:99px}
+.phone{position:absolute;bottom:88px;right:-4px;width:17px;height:30px;background:#111827;border-radius:6px;transform:rotate(-16deg);animation:call 2.4s ease-in-out infinite}
+.wave{position:absolute;bottom:96px;right:16px;width:24px;height:24px;border:3px solid #16a34a;border-radius:50%;opacity:0;animation:wave 2.4s ease-out infinite}
+.wave:nth-of-type(2){animation-delay:.8s}.wave:nth-of-type(3){animation-delay:1.6s}
+@keyframes call{50%{transform:rotate(-8deg) translateY(-3px)}}
+@keyframes wave{0%{transform:scale(.4);opacity:.8}100%{transform:scale(2.3);opacity:0}}
+.caption{margin-top:16px;font-weight:800;color:#166534}
+
+/* Stats */
+section{padding:78px 0}
+.eyebrow{color:#15803d;font-weight:900;text-transform:uppercase;letter-spacing:2px;font-size:13px}
+h2{font-size:clamp(1.8rem,4vw,2.7rem);margin:10px 0 16px;color:#052e16}
+.lead{max-width:780px;color:#475569;font-size:1.06rem}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px;margin-top:38px}
+.card{background:#fff;border:1px solid #dcfce7;border-radius:24px;padding:28px;box-shadow:0 16px 40px #052e160d;transition:.25s;position:relative;overflow:hidden}
+.card:hover{transform:translateY(-6px);box-shadow:0 22px 48px #16653422}
+.card .emoji{font-size:2.2rem}
+.num{font-size:clamp(2rem,5vw,3rem);font-weight:900;color:#166534;margin:10px 0 6px}
+.card p{color:#475569}
+.note{font-size:.82rem;color:#64748b;margin-top:10px}
+.source{font-size:.78rem;color:#64748b;margin-top:8px}
+
+/* Problem */
+.problem{background:#fff}
+.problem-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:44px;align-items:center}
+@media(max-width:900px){.problem-grid{grid-template-columns:1fr}}
+.timeline{margin-top:24px;display:grid;gap:14px}
+.step{display:flex;gap:14px;align-items:flex-start;background:#f8fafc;border:1px solid #e2e8f0;border-radius:18px;padding:16px}
+.step b{color:#0f172a}
+.step span{color:#475569}
+.step .ico{font-size:1.5rem}
+.alert{margin-top:26px;background:#fef2f2;border:1px solid #fecaca;color:#7f1d1d;padding:18px 20px;border-radius:18px;font-weight:700}
+
+/* Call panel */
+.call-panel{background:linear-gradient(135deg,#052e16,#166534);color:#fff;border-radius:30px;padding:44px;text-align:center;box-shadow:0 30px 70px #052e1633;position:relative;overflow:hidden}
+.call-panel:after{content:"";position:absolute;inset:-40%;background:radial-gradient(circle,#22c55e33,transparent 60%);animation:spin 18s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.call-panel *{position:relative;z-index:2}
+.call-number{font-size:clamp(2rem,7vw,3.6rem);font-weight:900;margin:14px 0;color:#fff;text-decoration:none;display:inline-block}
+.call-number:hover{color:#bbf7d0}
+.small{color:#bbf7d0;font-size:.95rem}
+
+/* Solution */
+.solution-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px;margin-top:36px}
+.solution{background:#fff;border-radius:24px;padding:28px;border:1px solid #bbf7d0;box-shadow:0 16px 40px #052e160d}
+.solution h3{color:#166534;margin:12px 0 8px}
+.solution p{color:#475569}
+.icon-circle{width:54px;height:54px;display:grid;place-items:center;border-radius:18px;background:#dcfce7;font-size:1.6rem}
+
+/* Crops */
+.crop-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:22px;margin-top:38px}
+.crop-card{background:#fff;border-radius:26px;padding:28px;border:1px solid #dcfce7;text-align:center;box-shadow:0 16px 40px #052e160d;transition:.25s}
+.crop-card:hover{transform:translateY(-7px)}
+.crop-stage{height:150px;display:grid;place-items:center;position:relative}
+.crop-card h3{margin-top:14px;color:#166534}
+.crop-card p{color:#475569;font-size:.95rem;margin-top:6px}
+.rice{width:90px;height:100px;position:relative}
+.rice .pot{position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:72px;height:26px;background:#a16207;border-radius:8px 8px 20px 20px}
+.rice .stalk{position:absolute;bottom:22px;left:50%;transform:translateX(-50%);width:6px;height:58px;background:#15803d;border-radius:9px}
+.rice .head{position:absolute;top:0;left:50%;transform:translateX(-50%);width:28px;height:26px;background:#fde047;border-radius:50%;box-shadow:0 0 0 6px #fde04744;animation:sway 3s ease-in-out infinite}
+.rice .leaf{position:absolute;bottom:45px;width:38px;height:8px;background:#22c55e;border-radius:99px;transform-origin:left}
+.rice .leaf.l{left:18px;transform:rotate(-42deg)}
+.rice .leaf.r{left:34px;transform:rotate(42deg)}
+.big-tree{width:120px;height:165px;position:relative}
+.big-tree .trunk{position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:15px;height:82px;background:#92400e;border-radius:10px}
+.big-tree .crown{position:absolute;top:0;left:50%;transform:translateX(-50%);width:112px;height:96px;background:radial-gradient(circle at 35% 35%,#4ade80,#15803d);border-radius:48% 52% 45% 55%/60% 60% 40% 40%;animation:breathe 4.5s ease-in-out infinite}
+.big-tree .fruit{position:absolute;top:82px;width:16px;height:16px;background:#a16207;border-radius:50%}
+.big-tree .fruit:nth-child(3){left:39%}.big-tree .fruit:nth-child(4){left:50%}.big-tree .fruit:nth-child(5){left:61%}
+.areca-big{width:125px;height:170px;position:relative}
+.areca-big .trunk{position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:14px;height:95px;background:#78350f;border-radius:10px}
+.areca-big .crown{position:absolute;top:0;left:50%;transform:translateX(-50%);width:120px;height:82px;background:radial-gradient(circle at 35% 35%,#86efac,#15803d);border-radius:48% 52% 45% 55%/60% 60% 40% 40%;animation:breathe 5s ease-in-out infinite}
+.areca-big .berry{position:absolute;top:90px;width:12px;height:12px;border-radius:50%;background:#dc2626}
+.areca-big .berry:nth-child(3){left:38%}.areca-big .berry:nth-child(4){left:50%}.areca-big .berry:nth-child(5){left:62%}
+
+/* How it helps */
+.help-list{display:grid;gap:16px;margin-top:34px}
+.help{display:flex;gap:16px;align-items:flex-start;background:#fff;border:1px solid #e2e8f0;border-radius:20px;padding:20px;box-shadow:0 12px 30px #052e160a}
+.help .ico{font-size:1.8rem}
+.help h3{color:#166534;margin-bottom:5px}
+.help p{color:#475569}
+
+/* Footer */
+footer{background:#052e16;color:#dcfce7;padding:52px 0;text-align:center}
+footer .wrap{max-width:760px}
+footer h2{color:#fff}
+footer p{color:#bbf7d0;margin-top:12px}
+.disclaimer{margin-top:22px;font-size:.82rem;color:#86efac;opacity:.85}
+
+/* reveal */
+.reveal{opacity:0;transform:translateY(28px);transition:.8s cubic-bezier(.2,.7,.2,1)}
+.reveal.in{opacity:1;transform:none}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.reveal{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+
+<div class="lang-bar">
+  <button class="lang-btn active" id="btn-kn" onclick="setLang('kn')">ಕನ್ನಡ</button>
+  <button class="lang-btn" id="btn-en" onclick="setLang('en')">English</button>
+</div>
+
+<header>
+  <div class="sky">
+    <div class="sun"></div>
+    <div class="cloud c1"></div><div class="cloud c2"></div><div class="cloud c3"></div>
+  </div>
+  <div class="wrap hero-inner">
+    <div class="badge">🌱 ಕೃಷಿ ಮಿತ್ರ | Krishi Mitra</div>
+    <h1 data-kn="ರೈತರಿಗೆ ತಕ್ಷಣ ಕನ್ನಡ ಧ್ವನಿ ಸಲಹೆ" data-en="Instant Kannada voice advice for farmers">ರೈತರಿಗೆ ತಕ್ಷಣ ಕನ್ನಡ ಧ್ವನಿ ಸಲಹೆ</h1>
+    <p class="sub" data-kn="ಬೆಳೆಗೆ ಸಮಸ್ಯೆ ಬಂದಾಗ ರೈತರು ಕಾಯಬೇಕಾಗಿಲ್ಲ. ಕೃಷಿ ಮಿತ್ರ ಕನ್ನಡದಲ್ಲಿ ಕೇಳಿ, ಸೀಮಿತ ಮತ್ತು ಸುರಕ್ಷಿತ ಕೃಷಿ ಸಲಹೆ ಪಡೆಯಿರಿ." data-en="When a crop problem appears, farmers should not have to wait. Ask Krishi Mitra in Kannada and receive limited, safety-first agricultural guidance.">
+      ಬೆಳೆಗೆ ಸಮಸ್ಯೆ ಬಂದಾಗ ರೈತರು ಕಾಯಬೇಕಾಗಿಲ್ಲ. ಕೃಷಿ ಮಿತ್ರ ಕನ್ನಡದಲ್ಲಿ ಕೇಳಿ, ಸೀಮಿತ ಮತ್ತು ಸುರಕ್ಷಿತ ಕೃಷಿ ಸಲಹೆ ಪಡೆಯಿರಿ.
+    </p>
+    <div class="cta-row">
+      <a class="cta cta-call pulse" href="tel:18001801551">📞 <span data-kn="ಸರ್ಕಾರದ ಕಿಸಾನ್ ಕಾಲ್ ಸೆಂಟರ್‌ಗೆ ಕರೆ ಮಾಡಿ" data-en="Call the Government Kisan Call Centre">ಸರ್ಕಾರದ ಕಿಸಾನ್ ಕಾಲ್ ಸೆಂಟರ್‌ಗೆ ಕರೆ ಮಾಡಿ</span><br>1800-180-1551</a>
+      <a class="cta cta-ghost" href="#solution">🌿 <span data-kn="ಹೇಗೆ ಸಹಾಯ ಮಾಡುತ್ತದೆ?" data-en="How does it help?">ಹೇಗೆ ಸಹಾಯ ಮಾಡುತ್ತದೆ?</span></a>
+    </div>
+    <p class="note" data-kn="ಈ ಸಂಖ್ಯೆಯು ಸರ್ಕಾರದ ಕಿಸಾನ್ ಕಾಲ್ ಸೆಂಟರ್‌ಗೆ ಸಂಪರ್ಕಿಸುತ್ತದೆ; ಇದು ಕೃಷಿ ಮಿತ್ರದ Exotel ಕರೆ ಸಂಖ್ಯೆ ಅಲ್ಲ." data-en="This number connects to the Government Kisan Call Centre; it is not Krishi Mitra's Exotel line.">
+      ಈ ಸಂಖ್ಯೆಯು ಸರ್ಕಾರದ ಕಿಸಾನ್ ಕಾಲ್ ಸೆಂಟರ್‌ಗೆ ಸಂಪರ್ಕಿಸುತ್ತದೆ; ಇದು ಕೃಷಿ ಮಿತ್ರದ Exotel ಕರೆ ಸಂಖ್ಯೆ ಅಲ್ಲ.
+    </p>
+
+    <div class="farmer-scene">
+      <div class="field">
+        <div class="hill"></div>
+        <div class="crop paddy"><div class="grain"></div><div class="leaf l"></div><div class="leaf r"></div><div class="stem"></div></div>
+        <div class="crop paddy" style="left:22%"><div class="grain"></div><div class="leaf l"></div><div class="leaf r"></div><div class="stem"></div></div>
+        <div class="crop paddy" style="left:38%"><div class="grain"></div><div class="leaf l"></div><div class="leaf r"></div><div class="stem"></div></div>
+        <div class="crop paddy" style="left:54%"><div class="grain"></div><div class="leaf l"></div><div class="leaf r"></div><div class="stem"></div></div>
+        <div class="crop tree coconut" style="left:70%"><div class="fruit"></div><div class="fruit"></div><div class="crown"></div><div class="trunk"></div></div>
+        <div class="crop tree areca" style="left:86%"><div class="berry"></div><div class="berry"></div><div class="crown"></div><div class="trunk"></div></div>
+        <div class="farmer">
+          <div class="wave"></div><div class="wave"></div><div class="wave"></div>
+          <div class="phone"></div>
+          <div class="head"><div class="hat"></div></div>
+          <div class="body"></div>
+        </div>
+      </div>
+      <div class="caption" data-kn="📞 ರೈತರು ಕರೆ ಮಾಡಿ ಕನ್ನಡದಲ್ಲಿ ಸಮಸ್ಯೆ ಹೇಳಬಹುದು" data-en="📞 A farmer can call and explain the problem in Kannada">📞 ರೈತರು ಕರೆ ಮಾಡಿ ಕನ್ನಡದಲ್ಲಿ ಸಮಸ್ಯೆ ಹೇಳಬಹುದು</div>
+    </div>
+  </div>
+</header>
+
+<section id="need">
+  <div class="wrap">
+    <div class="eyebrow reveal" data-kn="ಏಕೆ ಬೇಕು?" data-en="Why it is needed">ಏಕೆ ಬೇಕು?</div>
+    <h2 class="reveal" data-kn="ರೈತರಿಗೆ ತ್ವರಿತ ಸಲಹೆ ಏಕೆ ಅಗತ್ಯ?" data-en="Why farmers need a quick response">ರೈತರಿಗೆ ತ್ವರಿತ ಸಲಹೆ ಏಕೆ ಅಗತ್ಯ?</h2>
+    <p class="lead reveal" data-kn="ಕೀಟ, ರೋಗ, ಹವಾಮಾನ ಅಥವಾ ಬೆಳೆ ನಿರ್ವಹಣೆಯ ಸಮಸ್ಯೆ ಬಂದಾಗ ಸರಿಯಾದ ಮಾಹಿತಿ ತಡವಾಗಬಾರದು. ಸರಿಯಾದ ಸಮಯದಲ್ಲಿ ಸಲಹೆ ಸಿಗದಿದ್ದರೆ ರೈತರು ತಪ್ಪು ನಿರ್ಧಾರ ತೆಗೆದುಕೊಳ್ಳಬಹುದು ಅಥವಾ ಬೆಳೆ ನಷ್ಟದ ಅಪಾಯ ಹೆಚ್ಚಾಗಬಹುದು." data-en="When pests, disease, weather, or crop-management issues arise, reliable information cannot wait. Without timely advice, farmers may make poor decisions or face greater risk of crop loss.">
+      ಕೀಟ, ರೋಗ, ಹವಾಮಾನ ಅಥವಾ ಬೆಳೆ ನಿರ್ವಹಣೆಯ ಸಮಸ್ಯೆ ಬಂದಾಗ ಸರಿಯಾದ ಮಾಹಿತಿ ತಡವಾಗಬಾರದು. ಸರಿಯಾದ ಸಮಯದಲ್ಲಿ ಸಲಹೆ ಸಿಗದಿದ್ದರೆ ರೈತರು ತಪ್ಪು ನಿರ್ಧಾರ ತೆಗೆದುಕೊಳ್ಳಬಹುದು ಅಥವಾ ಬೆಳೆ ನಷ್ಟದ ಅಪಾಯ ಹೆಚ್ಚಾಗಬಹುದು.
+    </p>
+
+    <div class="cards">
+      <div class="card reveal">
+        <div class="emoji">🌾</div>
+        <div class="num">77.6 ಲಕ್ಷ+</div>
+        <p data-kn="ಕರ್ನಾಟಕದಲ್ಲಿ ಸುಮಾರು 77.6 ಲಕ್ಷ ಕೃಷಿ ಕಾರ್ಯಾಚರಣಾ ಘಟಕಗಳಿವೆ. ಇವು ರೈತ ಕುಟುಂಬಗಳು ಮತ್ತು ಬೇಸಾಯ ಘಟಕಗಳನ್ನು ಸೂಚಿಸುತ್ತವೆ." data-en="Karnataka has an estimated 7.76 million agricultural operational holdings, representing farm households and farming units.">
+          ಕರ್ನಾಟಕದಲ್ಲಿ ಸುಮಾರು 77.6 ಲಕ್ಷ ಕೃಷಿ ಕಾರ್ಯಾಚರಣಾ ಘಟಕಗಳಿವೆ. ಇವು ರೈತ ಕುಟುಂಬಗಳು ಮತ್ತು ಬೇಸಾಯ ಘಟಕಗಳನ್ನು ಸೂಚಿಸುತ್ತವೆ.
+        </p>
+        <div class="source">NSS 77th Round, 2019</div>
+      </div>
+
+      <div class="card reveal">
+        <div class="emoji">⏱️</div>
+        <div class="num" data-kn="ತಕ್ಷಣ ಬೇಕು" data-en="Needed now">ತಕ್ಷಣ ಬೇಕು</div>
+        <p data-kn="ರೋಗ ಅಥವಾ ಕೀಟ ಸಮಸ್ಯೆ ಕಂಡ ಕೂಡಲೇ ರೈತರಿಗೆ ಸ್ಪಷ್ಟ ಮಾರ್ಗದರ್ಶನ ಬೇಕು. ಆದರೆ ಪ್ರತಿ ಸಮಸ್ಯೆಗೂ ತಕ್ಷಣ ತಜ್ಞರ ಸಲಹೆ ಸಿಗುವುದಿಲ್ಲ." data-en="Farmers need clear guidance as soon as a disease or pest issue appears. But expert advice is not instantly available for every problem.">
+          ರೋಗ ಅಥವಾ ಕೀಟ ಸಮಸ್ಯೆ ಕಂಡ ಕೂಡಲೇ ರೈತರಿಗೆ ಸ್ಪಷ್ಟ ಮಾರ್ಗದರ್ಶನ ಬೇಕು. ಆದರೆ ಪ್ರತಿ ಸಮಸ್ಯೆಗೂ ತಕ್ಷಣ ತಜ್ಞರ ಸಲಹೆ ಸಿಗುವುದಿಲ್ಲ.
+        </p>
+        <div class="note" data-kn="ಈ ಪುಟದಲ್ಲಿ ಕರ್ನಾಟಕ-ನಿರ್ದಿಷ್ಟವಾಗಿ 'ಎಷ್ಟು ರೈತರಿಗೆ ತಕ್ಷಣ ಸಹಾಯ ಬೇಕು' ಎಂಬ ದೃಢೀಕೃತ ಸಂಖ್ಯೆ ಇಲ್ಲ; ಆದ್ದರಿಂದ ಅದನ್ನು ಸುಳ್ಳಾಗಿ ತೋರಿಸಲಾಗಿಲ್ಲ." data-en="No verified Karnataka-specific count of farmers needing immediate help is shown, to avoid presenting an unsupported number.">
+          ಈ ಪುಟದಲ್ಲಿ ಕರ್ನಾಟಕ-ನಿರ್ದಿಷ್ಟವಾಗಿ 'ಎಷ್ಟು ರೈತರಿಗೆ ತಕ್ಷಣ ಸಹಾಯ ಬೇಕು' ಎಂಬ ದೃಢೀಕೃತ ಸಂಖ್ಯೆ ಇಲ್ಲ; ಆದ್ದರಿಂದ ಅದನ್ನು ಸುಳ್ಳಾಗಿ ತೋರಿಸಲಾಗಿಲ್ಲ.
+        </div>
+      </div>
+
+      <div class="card reveal">
+        <div class="emoji">👨‍🌾</div>
+        <div class="num">1 : 1,162</div>
+        <p data-kn="ರಾಷ್ಟ್ರಮಟ್ಟದಲ್ಲಿ ಸುಮಾರು 1,162 ಕೃಷಿ ಕಾರ್ಯಾಚರಣಾ ಘಟಕಗಳಿಗೆ ಒಬ್ಬ ವಿಸ್ತರಣಾ ಅಧಿಕಾರಿ ಇರುವ ಅಂದಾಜಿದೆ; ಶಿಫಾರಸು ಮಾಡಿದ ಅನುಪಾತ 1:750. ಇದು ಸಲಹಾ ಸೇವೆಯ ಒತ್ತಡವನ್ನು ತೋರಿಸುತ್ತದೆ." data-en="Nationally, an estimated one extension worker serves about 1,162 operational holdings, against a recommended ratio of 1:750. This illustrates the pressure on advisory services.">
+          ರಾಷ್ಟ್ರಮಟ್ಟದಲ್ಲಿ ಸುಮಾರು 1,162 ಕೃಷಿ ಕಾರ್ಯಾಚರಣಾ ಘಟಕಗಳಿಗೆ ಒಬ್ಬ ವಿಸ್ತರಣಾ ಅಧಿಕಾರಿ ಇರುವ ಅಂದಾಜಿದೆ; ಶಿಫಾರಸು ಮಾಡಿದ ಅನುಪಾತ 1:750. ಇದು ಸಲಹಾ ಸೇವೆಯ ಒತ್ತಡವನ್ನು ತೋರಿಸುತ್ತದೆ.
+        </p>
+        <div class="source">MANAGE discussion paper, citing FAO and Doubling Farmers’ Income Committee</div>
+      </div>
+    </div>
+
+    <div class="alert reveal">
+      ⚠️ <span data-kn="ಈ ಅಂಕಿ ಅಂಶಗಳು ರಾಷ್ಟ್ರಮಟ್ಟದ ಅಂದಾಜುಗಳು; ಕರ್ನಾಟಕದ ಪ್ರತಿ ಜಿಲ್ಲೆಗೆ ನೇರವಾಗಿ ಅನ್ವಯಿಸುವುದಿಲ್ಲ. ಕೃಷಿ ಮಿತ್ರ ಈಗ ಪೂರ್ಣ ತಜ್ಞ ಪರಿಶೀಲಿತ ವೈದ್ಯಕೀಯ/ಕೀಟನಾಶಕ ಸಲಹೆ ನೀಡುವುದಿಲ್ಲ." data-en="These are national estimates and do not directly apply to every Karnataka district. Krishi Mitra does not currently provide fully expert-reviewed pesticide or treatment advice.">
+      ಈ ಅಂಕಿ ಅಂಶಗಳು ರಾಷ್ಟ್ರಮಟ್ಟದ ಅಂದಾಜುಗಳು; ಕರ್ನಾಟಕದ ಪ್ರತಿ ಜಿಲ್ಲೆಗೆ ನೇರವಾಗಿ ಅನ್ವಯಿಸುವುದಿಲ್ಲ. ಕೃಷಿ ಮಿತ್ರ ಈಗ ಪೂರ್ಣ ತಜ್ಞ ಪರಿಶೀಲಿತ ವೈದ್ಯಕೀಯ/ಕೀಟನಾಶಕ ಸಲಹೆ ನೀಡುವುದಿಲ್ಲ.
+      </span>
+    </div>
+  </div>
+</section>
+
+<section id="solution" style="background:#fff">
+  <div class="wrap">
+    <div class="eyebrow reveal" data-kn="ಪರಿಹಾರ" data-en="The solution">ಪರಿಹಾರ</div>
+    <h2 class="reveal" data-kn="ಕೃಷಿ ಮಿತ್ರ ಹೇಗೆ ಸಮಸ್ಯೆ ಪರಿಹರಿಸುತ್ತದೆ?" data-en="How Krishi Mitra helps solve the problem">ಕೃಷಿ ಮಿತ್ರ ಹೇಗೆ ಸಮಸ್ಯೆ ಪರಿಹರಿಸುತ್ತದೆ?</h2>
+    <p class="lead reveal" data-kn="ಕೃಷಿ ಮಿತ್ರ ಕನ್ನಡ ಧ್ವನಿ ಆಧಾರಿತ ಸಲಹಾ ಸೇವೆ. ರೈತರು ಫೋನ್ ಅಥವಾ ಬ್ರೌಸರ್ ಮೂಲಕ ತಮ್ಮ ಬೆಳೆ ಮತ್ತು ಸಮಸ್ಯೆಯನ್ನು ಕನ್ನಡದಲ್ಲಿ ಹೇಳಬಹುದು. ವ್ಯವಸ್ಥೆ ಸೀಮಿತ, ಸುರಕ್ಷಿತ ಸಲಹೆ ನೀಡುತ್ತದೆ; ಅನಿಶ್ಚಿತವಾದ ಸಂದರ್ಭದಲ್ಲಿ ಕೃಷಿ ಅಧಿಕಾರಿ ಅಥವಾ ಕೃಷಿ ವಿಜ್ಞಾನ ಕೇಂದ್ರಕ್ಕೆ ಉಲ್ಲೇಖಿಸುತ್ತದೆ." data-en="Krishi Mitra is a Kannada voice-based advisory service. Farmers can describe their crop and problem in Kannada by phone or browser. It provides limited, safety-first guidance and refers farmers to an agriculture officer or KVK when advice is uncertain.">
+      ಕೃಷಿ ಮಿತ್ರ ಕನ್ನಡ ಧ್ವನಿ ಆಧಾರಿತ ಸಲಹಾ ಸೇವೆ. ರೈತರು ಫೋನ್ ಅಥವಾ ಬ್ರೌಸರ್ ಮೂಲಕ ತಮ್ಮ ಬೆಳೆ ಮತ್ತು ಸಮಸ್ಯೆಯನ್ನು ಕನ್ನಡದಲ್ಲಿ ಹೇಳಬಹುದು. ವ್ಯವಸ್ಥೆ ಸೀಮಿತ, ಸುರಕ್ಷಿತ ಸಲಹೆ ನೀಡುತ್ತದೆ; ಅನಿಶ್ಚಿತವಾದ ಸಂದರ್ಭದಲ್ಲಿ ಕೃಷಿ ಅಧಿಕಾರಿ ಅಥವಾ ಕೃಷಿ ವಿಜ್ಞಾನ ಕೇಂದ್ರಕ್ಕೆ ಉಲ್ಲೇಖಿಸುತ್ತದೆ.
+    </p>
+
+    <div class="solution-grid">
+      <div class="solution reveal">
+        <div class="icon-circle">🎙️</div>
+        <h3 data-kn="ಕನ್ನಡದಲ್ಲಿ ಮಾತನಾಡಿ" data-en="Speak in Kannada">ಕನ್ನಡದಲ್ಲಿ ಮಾತನಾಡಿ</h3>
+        <p data-kn="ಆಂಗ್ಲ ಭಾಷೆ ಅಥವಾ ಜಟಿಲ ಅಪ್ಲಿಕೇಶನ್ ಬೇಕಿಲ್ಲ. ರೈತರು ತಮ್ಮ ಭಾಷೆಯಲ್ಲಿ ಸಮಸ್ಯೆಯನ್ನು ಹೇಳಬಹುದು." data-en="No English skills or complicated app is required. Farmers can explain the issue in their own language.">
+          ಆಂಗ್ಲ ಭಾಷೆ ಅಥವಾ ಜಟಿಲ ಅಪ್ಲಿಕೇಶನ್ ಬೇಕಿಲ್ಲ. ರೈತರು ತಮ್ಮ ಭಾಷೆಯಲ್ಲಿ ಸಮಸ್ಯೆಯನ್ನು ಹೇಳಬಹುದು.
+        </p>
+      </div>
+      <div class="solution reveal">
+        <div class="icon-circle">🧭</div>
+        <h3 data-kn="ಸರಿಯಾದ ದಾರಿಗೆ ಮಾರ್ಗದರ್ಶನ" data-en="Guidance in the right direction">ಸರಿಯಾದ ದಾರಿಗೆ ಮಾರ್ಗದರ್ಶನ</h3>
+        <p data-kn="ಬೆಳೆ ಮತ್ತು ಸಮಸ್ಯೆಯನ್ನು ಗುರುತಿಸಿ, ಲಭ್ಯವಿರುವ ಸೀಮಿತ ಸಲಹೆ ನೀಡುತ್ತದೆ. ಸಾಕಷ್ಟು ಮಾಹಿತಿ ಇಲ್ಲದಿದ್ದರೆ ತಪ್ಪು ಸಲಹೆ ನೀಡುವುದಿಲ್ಲ." data-en="It identifies the crop and problem, provides available limited guidance, and avoids giving advice when information is insufficient.">
+          ಬೆಳೆ ಮತ್ತು ಸಮಸ್ಯೆಯನ್ನು ಗುರುತಿಸಿ, ಲಭ್ಯವಿರುವ ಸೀಮಿತ ಸಲಹೆ ನೀಡುತ್ತದೆ. ಸಾಕಷ್ಟು ಮಾಹಿತಿ ಇಲ್ಲದಿದ್ದರೆ ತಪ್ಪು ಸಲಹೆ ನೀಡುವುದಿಲ್ಲ.
+        </p>
+      </div>
+      <div class="solution reveal">
+        <div class="icon-circle">🤝</div>
+        <h3 data-kn="ತಜ್ಞರಿಗೆ ಸುರಕ್ಷಿತ ಉಲ್ಲೇಖ" data-en="Safe referral to experts">ತಜ್ಞರಿಗೆ ಸುರಕ್ಷಿತ ಉಲ್ಲೇಖ</h3>
+        <p data-kn="ರಾಸಾಯನಿಕ ಬಳಕೆ, ಗಂಭೀರ ರೋಗ ಅಥವಾ ಅನಿಶ್ಚಿತ ಸಂದರ್ಭದಲ್ಲಿ ಕೃಷಿ ಅಧಿಕಾರಿ, KVK ಅಥವಾ ಕೃಷಿ ಸಹಾಯವನ್ನು ಶಿಫಾರಸು ಮಾಡುತ್ತದೆ." data-en="For chemical use, serious disease, or uncertain cases, it recommends an agriculture officer, KVK, or appropriate agricultural support.">
+          ರಾಸಾಯನಿಕ ಬಳಕೆ, ಗಂಭೀರ ರೋಗ ಅಥವಾ ಅನಿಶ್ಚಿತ ಸಂದರ್ಭದಲ್ಲಿ ಕೃಷಿ ಅಧಿಕಾರಿ, KVK ಅಥವಾ ಕೃಷಿ ಸಹಾಯವನ್ನು ಶಿಫಾರಸು ಮಾಡುತ್ತದೆ.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="crops">
+  <div class="wrap">
+    <div class="eyebrow reveal" data-kn="ಬೆಳೆಗಳು" data-en="Crops">ಬೆಳೆಗಳು</div>
+    <h2 class="reveal" data-kn="ಪ್ರಸ್ತುತ ಬೆಂಬಲಿತ ಬೆಳೆಗಳು" data-en="Currently supported crops">ಪ್ರಸ್ತುತ ಬೆಂಬಲಿತ ಬೆಳೆಗಳು</h2>
+    <p class="lead reveal" data-kn="ಕೃಷಿ ಮಿತ್ರ ಪ್ರಸ್ತುತ ಸೀಮಿತ ಸಲಹಾ ಆವರಣದೊಂದಿಗೆ ಈ ಬೆಳೆಗಳಿಗೆ ಸಹಾಯ ನೀಡುತ್ತದೆ. ಇತರ ಬೆಳೆಗಳಿಗೆ ತಪ್ಪು ಅಥವಾ ಊಹಾತ್ಮಕ ಸಲಹೆ ನೀಡುವುದಿಲ್ಲ." data-en="Krishi Mitra currently supports these crops within a limited advisory scope. It does not provide guessed or unsafe advice for other crops.">
+      ಕೃಷಿ ಮಿತ್ರ ಪ್ರಸ್ತುತ ಸೀಮಿತ ಸಲಹಾ ಆವರಣದೊಂದಿಗೆ ಈ ಬೆಳೆಗಳಿಗೆ ಸಹಾಯ ನೀಡುತ್ತದೆ. ಇತರ ಬೆಳೆಗಳಿಗೆ ತಪ್ಪು ಅಥವಾ ಊಹಾತ್ಮಕ ಸಲಹೆ ನೀಡುವುದಿಲ್ಲ.
+    </p>
+
+    <div class="crop-row">
+      <div class="crop-card reveal">
+        <div class="crop-stage">
+          <div class="rice">
+            <div class="head"></div>
+            <div class="leaf l"></div><div class="leaf r"></div>
+            <div class="stalk"></div><div class="pot"></div>
+          </div>
+        </div>
+        <h3>🌾 ಭತ್ತ / Paddy</h3>
+        <p data-kn="ಭತ್ತದ ಸೀಮಿತ ಸಮಸ್ಯೆಗಳಿಗೆ ಸಲಹಾ ಹರಿವು ಲಭ್ಯವಿದೆ." data-en="Limited advisory flows are available for selected paddy issues.">ಭತ್ತದ ಸೀಮಿತ ಸಮಸ್ಯೆಗಳಿಗೆ ಸಲಹಾ ಹರಿವು ಲಭ್ಯವಿದೆ.</p>
+      </div>
+
+      <div class="crop-card reveal">
+        <div class="crop-stage">
+          <div class="big-tree coconut">
+            <div class="fruit"></div><div class="fruit"></div><div class="fruit"></div>
+            <div class="crown"></div><div class="trunk"></div>
+          </div>
+        </div>
+        <h3>🥥 ತೆಂಗು / Coconut</h3>
+        <p data-kn="ತೆಂಗಿನ ಸೀಮಿತ ಸಮಸ್ಯೆಗಳಿಗೆ ಸಲಹಾ ಹರಿವು ಲಭ್ಯವಿದೆ." data-en="Limited advisory flows are available for selected coconut issues.">ತೆಂಗಿನ ಸೀಮಿತ ಸಮಸ್ಯೆಗಳಿಗೆ ಸಲಹಾ ಹರಿವು ಲಭ್ಯವಿದೆ.</p>
+      </div>
+
+      <div class="crop-card reveal">
+        <div class="crop-stage">
+          <div class="areca-big">
+            <div class="berry"></div><div class="berry"></div><div class="berry"></div>
+            <div class="crown"></div><div class="trunk"></div>
+          </div>
+        </div>
+        <h3>🌰 ಅಡಿಕೆ / Arecanut</h3>
+        <p data-kn="ಅಡಿಕೆಯ ಸೀಮಿತ ಸಮಸ್ಯೆಗಳಿಗೆ ಸಲಹಾ ಹರಿವು ಲಭ್ಯವಿದೆ." data-en="Limited advisory flows are available for selected arecanut issues.">ಅಡಿಕೆಯ ಸೀಮಿತ ಸಮಸ್ಯೆಗಳಿಗೆ ಸಲಹಾ ಹರಿವು ಲಭ್ಯವಿದೆ.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="help" style="background:#fff">
+  <div class="wrap">
+    <div class="eyebrow reveal" data-kn="ಪ್ರಯೋಜನ" data-en="Benefits">ಪ್ರಯೋಜನ</div>
+    <h2 class="reveal" data-kn="ರೈತರಿಗೆ ಹೇಗೆ ಉಪಯುಕ್ತ?" data-en="How it helps farmers">ರೈತರಿಗೆ ಹೇಗೆ ಉಪಯುಕ್ತ?</h2>
+    <div class="help-list">
+      <div class="help reveal"><div class="ico">⚡</div><div><h3 data-kn="ವೇಗವಾಗಿ ಪ್ರಾಥಮಿಕ ದಾರಿದರ್ಶನ" data-en="Faster first-step guidance">ವೇಗವಾಗಿ ಪ್ರಾಥಮಿಕ ದಾರಿದರ್ಶನ</h3><p data-kn="ಸಮಸ್ಯೆ ಕಂಡ ಕೂಡಲೇ ಕರೆ ಮಾಡಿ ಮೂಲ ಮಾರ್ಗದರ್ಶನ ಪಡೆಯಬಹುದು; ಸಾಧ್ಯವಾದಷ್ಟು ಬೇಗ ಸರಿಯಾದ ಮುಂದಿನ ಹೆಜ್ಜೆ ತಿಳಿಯಬಹುದು." data-en="Farmers can call immediately for initial guidance and understand the next appropriate step sooner.">ಸಮಸ್ಯೆ ಕಂಡ ಕೂಡಲೇ ಕರೆ ಮಾಡಿ ಮೂಲ ಮಾರ್ಗದರ್ಶನ ಪಡೆಯಬಹುದು; ಸಾಧ್ಯವಾದಷ್ಟು ಬೇಗ ಸರಿಯಾದ ಮುಂದಿನ ಹೆಜ್ಜೆ ತಿಳಿಯಬಹುದು.</p></div></div>
+      <div class="help reveal"><div class="ico">🗣️</div><div><h3 data-kn="ಕನ್ನಡ ಧ್ವನಿ ಅನುಭವ" data-en="Kannada voice experience">ಕನ್ನಡ ಧ್ವನಿ ಅನುಭವ</h3><p data-kn="ಓದಲು ಕಷ್ಟವಿರುವ ಅಥವಾ ಸ್ಮಾರ್ಟ್‌ಫೋನ್ ಅಪ್ಲಿಕೇಶನ್ ಬಳಸದ ರೈತರಿಗೂ ಧ್ವನಿ ಮೂಲಕ ಸಂವಹನ ಸುಲಭ." data-en="Voice makes communication easier for farmers who find reading or mobile apps difficult.">ಓದಲು ಕಷ್ಟವಿರುವ ಅಥವಾ ಸ್ಮಾರ್ಟ್‌ಫೋನ್ ಅಪ್ಲಿಕೇಶನ್ ಬಳಸದ ರೈತರಿಗೂ ಧ್ವನಿ ಮೂಲಕ ಸಂವಹನ ಸುಲಭ.</p></div></div>
+      <div class="help reveal"><div class="ico">🛡️</div><div><h3 data-kn="ಸುರಕ್ಷಿತ ಮಿತಿಗಳು" data-en="Clear safety limits">ಸುರಕ್ಷಿತ ಮಿತಿಗಳು</h3><p data-kn="ಖಚಿತವಾಗಿ ತಿಳಿದಿಲ್ಲದ ಸಂದರ್ಭದಲ್ಲಿ ಊಹೆ ಮಾಡುವ ಬದಲು ಸರಿಯಾದ ತಜ್ಞರಿಗೆ ಉಲ್ಲೇಖಿಸುತ್ತದೆ." data-en="Instead of guessing when it is unsure, it directs farmers to the appropriate expert support.">ಖಚಿತವಾಗಿ ತಿಳಿದಿಲ್ಲದ ಸಂದರ್ಭದಲ್ಲಿ ಊಹೆ ಮಾಡುವ ಬದಲು ಸರಿಯಾದ ತಜ್ಞರಿಗೆ ಉಲ್ಲೇಖಿಸುತ್ತದೆ.</p></div></div>
+      <div class="help reveal"><div class="ico">📞</div><div><h3 data-kn="ಕೃಷಿ ಸಹಾಯಕ್ಕೆ ನೇರ ಸಂಪರ್ಕ" data-en="Direct access to agricultural support">ಕೃಷಿ ಸಹಾಯಕ್ಕೆ ನೇರ ಸಂಪರ್ಕ</h3><p data-kn="ಕೃಷಿ ಮಿತ್ರದ ಜೊತೆಗೆ, ಕೃಷಿ ಸಲಹೆಗಾಗಿ ಕಿಸಾನ್ ಕಾಲ್ ಸೆಂಟರ್‌ಗೆ 1800-180-1551 ಸಂಖ್ಯೆಗೆ ಕರೆ ಮಾಡಬಹುದು." data-en="Alongside Krishi Mitra, farmers can call the Kisan Call Centre at 1800-180-1551 for agricultural advice.">ಕೃಷಿ ಮಿತ್ರದ ಜೊತೆಗೆ, ಕೃಷಿ ಸಲಹೆಗಾಗಿ ಕಿಸಾನ್ ಕಾಲ್ ಸೆಂಟರ್‌ಗೆ 1800-180-1551 ಸಂಖ್ಯೆಗೆ ಕರೆ ಮಾಡಬಹುದು.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="call-panel reveal">
+      <div class="eyebrow" style="color:#bbf7d0" data-kn="ಸರ್ಕಾರದ ಕೃಷಿ ಸಹಾಯ" data-en="Government agricultural helpline">ಸರ್ಕಾರದ ಕೃಷಿ ಸಹಾಯ</div>
+      <h2 data-kn="ಕಿಸಾನ್ ಕಾಲ್ ಸೆಂಟರ್‌ಗೆ ಕರೆ ಮಾಡಿ" data-en="Call the Kisan Call Centre">ಕಿಸಾನ್ ಕಾಲ್ ಸೆಂಟರ್‌ಗೆ ಕರೆ ಮಾಡಿ</h2>
+      <p data-kn="ಕೀಟ, ರೋಗ, ಬೀಜ, ಗೊಬ್ಬರ, ಹವಾಮಾನ, ಮಾರುಕಟ್ಟೆ ಮತ್ತು ಸರ್ಕಾರಿ ಯೋಜನೆಗಳ ಕುರಿತು ಉಚಿತ ಕೃಷಿ ಸಲಹೆಗಾಗಿ ಕಿಸಾನ್ ಕಾಲ್ ಸೆಂಟರ್‌ಗೆ ಕರೆ ಮಾಡಿ." data-en="Call the Kisan Call Centre for free guidance on pests, diseases, seeds, fertilisers, weather, markets, and government schemes.">
+        ಕೀಟ, ರೋಗ, ಬೀಜ, ಗೊಬ್ಬರ, ಹವಾಮಾನ, ಮಾರುಕಟ್ಟೆ ಮತ್ತು ಸರ್ಕಾರಿ ಯೋಜನೆಗಳ ಕುರಿತು ಉಚಿತ ಕೃಷಿ ಸಲಹೆಗಾಗಿ ಕಿಸಾನ್ ಕಾಲ್ ಸೆಂಟರ್‌ಗೆ ಕರೆ ಮಾಡಿ.
+      </p>
+      <a class="call-number pulse" href="tel:18001801551">📞 1800-180-1551</a>
+      <p class="small" data-kn="ಕಿಸಾನ್ ಕಾಲ್ ಸೆಂಟರ್ ಸೇವೆ | ಕೃಷಿ ಮತ್ತು ರೈತರ ಕಲ್ಯಾಣ ಸಚಿವಾಲಯ" data-en="Kisan Call Centre service | Ministry of Agriculture & Farmers Welfare">ಕಿಸಾನ್ ಕಾಲ್ ಸೆಂಟರ್ ಸೇವೆ | ಕೃಷಿ ಮತ್ತು ರೈತರ ಕಲ್ಯಾಣ ಸಚಿವಾಲಯ</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <h2>🌱 ಕೃಷಿ ಮಿತ್ರ</h2>
+    <p data-kn="ಕನ್ನಡ ಧ್ವನಿ ಮೂಲಕ ರೈತರಿಗೆ ಸೀಮಿತ, ಸುರಕ್ಷಿತ ಮತ್ತು ಜವಾಬ್ದಾರ ಕೃಷಿ ಸಲಹಾ ಪ್ರಯೋಗ." data-en="A limited, safe, and responsible Kannada voice advisory prototype for farmers.">ಕನ್ನಡ ಧ್ವನಿ ಮೂಲಕ ರೈತರಿಗೆ ಸೀಮಿತ, ಸುರಕ್ಷಿತ ಮತ್ತು ಜವಾಬ್ದಾರ ಕೃಷಿ ಸಲಹಾ ಪ್ರಯೋಗ.</p>
+    <p class="disclaimer" data-kn="ಇದು ಪ್ರಾಯೋಗಿಕ ಸೇವೆ. ಗಂಭೀರ ಬೆಳೆ ನಷ್ಟ, ರಾಸಾಯನಿಕ ಬಳಕೆ ಅಥವಾ ತುರ್ತು ಸಂದರ್ಭದಲ್ಲಿ ಹತ್ತಿರದ ಕೃಷಿ ಅಧಿಕಾರಿ, KVK ಅಥವಾ ಕಿಸಾನ್ ಕಾಲ್ ಸೆಂಟರ್‌ನ್ನು ಸಂಪರ್ಕಿಸಿ." data-en="This is a prototype. For severe crop loss, chemical use, or urgent situations, contact a nearby agriculture officer, KVK, or the Kisan Call Centre.">
+      ಇದು ಪ್ರಾಯೋಗಿಕ ಸೇವೆ. ಗಂಭೀರ ಬೆಳೆ ನಷ್ಟ, ರಾಸಾಯನಿಕ ಬಳಕೆ ಅಥವಾ ತುರ್ತು ಸಂದರ್ಭದಲ್ಲಿ ಹತ್ತಿರದ ಕೃಷಿ ಅಧಿಕಾರಿ, KVK ಅಥವಾ ಕಿಸಾನ್ ಕಾಲ್ ಸೆಂಟರ್‌ನ್ನು ಸಂಪರ್ಕಿಸಿ.
+    </p>
+  </div>
+</footer>
+
+<script>
+function setLang(lang){
+  document.documentElement.lang = lang === 'kn' ? 'kn' : 'en';
+  document.querySelectorAll('[data-kn]').forEach(el=>{
+    el.textContent = lang === 'kn' ? el.dataset.kn : el.dataset.en;
+  });
+  document.getElementById('btn-kn').classList.toggle('active', lang==='kn');
+  document.getElementById('btn-en').classList.toggle('active', lang==='en');
+}
+const io=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('in')});
+},{threshold:.15});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+</script>
+</body>
+</html>

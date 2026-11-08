@@ -25,6 +25,12 @@ def health():
 
 
 @app.get("/")
+def landing():
+    landing_path = pathlib.Path(__file__).resolve().parent.parent / "output" / "krishi-mitra-landing.html"
+    return HTMLResponse(landing_path.read_text(encoding="utf-8"))
+
+
+@app.get("/sim")
 def sim():
     return HTMLResponse((pathlib.Path(__file__).parent / "sim.html").read_text(encoding="utf-8"))
 

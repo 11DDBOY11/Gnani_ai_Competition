@@ -1,4 +1,4 @@
-"""Offline unit tests for STTStream and transcribe_pcm error handling."""
+﻿"""Offline unit tests for STTStream and transcribe_pcm error handling."""
 import asyncio
 import json
 import pytest
@@ -243,9 +243,11 @@ def test_sim_html_contains_token_support_and_ui_elements():
     assert 'id="tok"' in html
     assert "localStorage" not in html
 
-    # Verify half-duplex gate and 4401/4403 status visibility
-    assert "nextT" in html
+    # Verify ordered PCM playback, half-duplex gate, and 4401/4403 status visibility
+    assert "atomic_reply" in html
+    assert "source.onended=()=>" in html
+    assert "source.start(this.ctx.currentTime)" in html
+    assert "if(session.isPlaying)return" in html
     assert "4401" in html
     assert "4403" in html
     assert "call ended" in html
-

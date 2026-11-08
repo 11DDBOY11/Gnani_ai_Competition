@@ -1,8 +1,11 @@
 import json, pathlib, re, unicodedata
 from dataclasses import dataclass, field
+from .diseases import (match_disease, match_symptoms, rank_disease_candidates,
+                       registry_for_kb)
 
 KB_PATH = pathlib.Path(__file__).with_name("kb.json")
 KB = {a["id"]: a for a in json.loads(KB_PATH.read_text(encoding="utf-8"))["advisories"]}
+DISEASE_REGISTRY = registry_for_kb(KB)
 
 CROPS = {
     "paddy": ["ಭತ್ತ", "ಬತ್ತ", "ಅಕ್ಕಿ", "ಗದ್ದೆ", "paddy", "rice", "bhatta"],
@@ -32,19 +35,9 @@ CROP_KN = {
 }
 
 PROBLEMS = {
-    "paddy_leaf_folder": ["ಎಲೆ ಸುತ್ತ", "ಎಲೆ ಮಡಚ", "ಸುತ್ತಿಕೊಂಡ", "ಸುತ್ತಿಕೊಳ್ಳ", "leaf folder", "leaf roll", "leaf fold"],
-    "paddy_blast": ["ಬೆಂಕಿ ರೋಗ", "ಬೆಂಕಿರೋಗ", "ಕಣ್ಣಿನ ಆಕಾರ", "ಕಂದು ಚುಕ್ಕೆ", "blast"],
-    "arecanut_koleroga": ["ಕಾಯಿ ಕೊಳೆ", "ಕಾಯಿ ಕೊಳೆತ", "ಕೊಳೆ ರೋಗ", "ಕೊಳೆರೋಗ", "ಮಹಾಲಿ", "koleroga", "fruit rot"],
-    "coconut_rhino_beetle": ["ಕೊಂಬಿನ ದುಂಬಿ", "ದುಂಬಿ", "beetle"],
-    "coconut_bud_rot": ["ಸುಳಿ ಕೊಳೆ", "ಸುಳಿ", "bud rot"],
-    "sugarcane_stem_rot": ["ಕಾಂಡ ಕೊಳೆ", "ಕಬ್ಬು ಕೊಳೆ", "stem rot"],  # NEEDS NATIVE REVIEW
-    "grapes_vine_rot": ["ಬಳ್ಳಿ ಕೊಳೆ", "ದ್ರಾಕ್ಷಿ ಕೊಳೆ", "vine rot", "downy mildew"],  # NEEDS NATIVE REVIEW
-    "pomegranate_fruit_rot": ["ಅನಾರ್ ಕಾಯಿ", "ದಾಳಿಂಬೆ ಕೊಳೆ", "pomegranate rot"],  # NEEDS NATIVE REVIEW
-    "maize_grain_pest": ["ಮೆಕ್ಕೆಜೋಳ ಕಾಳು", "ಕಾಳು ಕೀಟ", "fall armyworm", "stem borer"],  # NEEDS NATIVE REVIEW
-    "jowar_pest": ["ಜೋಳದ ಕೀಟ", "ಜೋಳ ಕೀಟ", "jowar pest", "shoot fly"],  # NEEDS NATIVE REVIEW
-    "wheat_rust": ["ಗೋಧಿ ರತ್ತು", "ರಸ್ಟ್", "wheat rust", "rust"],  # NEEDS NATIVE REVIEW
-    "silk_worm_disease": ["ರೇಷ್ಮೆ ಹುಳು", "ರೇಷ್ಮೆ ರೋಗ", "silkworm disease", "pebrine"],  # NEEDS NATIVE REVIEW
-    "cotton_whitefly": ["ಬಿಳಿ ನೊಣ", "ಹತ್ತಿ ನೊಣ", "whitefly", "cotton pest"],  # NEEDS NATIVE REVIEW
+    disease.id: list(disease.aliases + disease.confirmation_aliases)
+    for disease in DISEASE_REGISTRY
+    if disease.has_advisory
 }
 
 STAGES = {
@@ -88,7 +81,7 @@ T = {
     "unsupported_crop": [
         "ಕ್ಷಮಿಸಿ, {crop} ಬೆಳೆಗೆ ಪರಿಹಾರ ಅಥವಾ ಚಿಕಿತ್ಸಾ ಸಲಹೆ ಸದ್ಯಕ್ಕೆ ನನ್ನಲ್ಲಿ ಲಭ್ಯವಿಲ್ಲ.",
         "ಹೆಚ್ಚಿನ ಮಾಹಿತಿಗಾಗಿ ದಯವಿಟ್ಟು ಹತ್ತಿರದ ಕೃಷಿ ಅಧಿಕಾರಿ ಅಥವಾ ಕೃಷಿ ವಿಜ್ಞಾನ ಕೇಂದ್ರವನ್ನು ಸಂಪರ್ಕಿಸಿ.",
-        "ಪ್ರಸ್ತುತ ನಮ್ಮಲ್ಲಿ {supported_crops} ಬೆಳೆಗಳಿಗೆ ಸಹಾಯ ಲಭ್ಯವಿದೆ. ನೀವು ಇವುಗಳಲ್ಲಿ ಯಾವುದಾದರೂ ಬೆಳೆಯ ಬಗ್ಗೆ ಕೇಳಲು ಬಯಸುತ್ತೀರಾ?",
+        "ಪ್ರಸ್ತುತ ನಮ್ಮ ಬೆಂಬಲ ಕೇವಲ {supported_crops} ಬೆಳೆಗಳಿಗೆ ಮಾತ್ರ ಸೀಮಿತವಾಗಿದೆ. ನೀವು ಇವುಗಳಲ್ಲಿ ಯಾವುದಾದರೂ ಬೆಳೆಯ ಬಗ್ಗೆ ಕೇಳಲು ಬಯಸುತ್ತೀರಾ?",
     ],
     # REVIEW: Human review of Kannada wording when no previous advisory exists to replay
     "no_previous_advisory": [
@@ -153,6 +146,18 @@ def normalize(s: str) -> str:
     return re.sub(r"\s+", " ", s).strip()
 
 
+def _is_yes_answer(text: str) -> bool:
+    return bool(re.search(r"(?:^|\s)(?:ಹೌದು|ಹೌದ್ರಿ|ಹೂಂ|ಸರಿ)(?=\s|$)", text)) or bool(
+        re.search(r"\b(?:yes|haudu|correct)\b", text)
+    )
+
+
+def _is_no_answer(text: str) -> bool:
+    return bool(re.search(r"(?:^|\s)(?:ಇಲ್ಲ|ಅಲ್ಲ|ಬೇಡ)(?=\s|$)", text)) or bool(
+        re.search(r"\b(?:no|illa|wrong)\b", text)
+    )
+
+
 def _best(text, table, only=None):
     best, score = None, 0
     for key, kws in table.items():
@@ -166,6 +171,17 @@ def _best(text, table, only=None):
 
 def find_crop(text):
     return _best(normalize(text), CROPS)
+
+
+def find_crop_correction(text):
+    """Return a newly named crop after an explicit negated prior crop."""
+    t = normalize(text)
+    for marker in re.finditer(r"(?:^|\s)(?:ಅಲ್ಲ|ಇಲ್ಲ|ವಲ್ಲ|not)(?=\s|$)", t):
+        before = find_crop(t[:marker.start()])
+        after = find_crop(t[marker.end():])
+        if before and after and before != after:
+            return after
+    return None
 
 
 def _is_kw_negated(text: str, kw: str) -> bool:
@@ -188,19 +204,15 @@ def _is_kw_negated(text: str, kw: str) -> bool:
 
 
 def find_problem(text, crop=None):
-    t = normalize(text)
-    best, score = None, 0
-    for key, kws in PROBLEMS.items():
-        if crop is not None and (key not in KB or KB[key]["crop"] != crop):
-            continue
-        sc = sum(
-            len(normalize(k))
-            for k in kws
-            if normalize(k) in t and not _is_kw_negated(t, k)
-        )
-        if sc > score:
-            best, score = key, sc
-    return best
+    # An established crop is authoritative. Session.respond handles explicit
+    # crop changes before this lookup, so disease matching cannot cross crops.
+    match_crop = crop if crop is not None else find_crop(text)
+    result = match_disease(text, match_crop, DISEASE_REGISTRY,
+                           crop_explicit=bool(match_crop))
+    disease_id = result.single_id
+    if result.method != "exact" or result.needs_confirm or not disease_id:
+        return None
+    return disease_id if next(d for d in DISEASE_REGISTRY if d.id == disease_id).has_advisory else None
 
 
 def find_negated_problems(text, crop=None):
@@ -232,7 +244,10 @@ def is_new_issue(text: str) -> bool:
 
 
 def find_stage(text):
-    return _best(normalize(text), STAGES)
+    t = normalize(text)
+    if re.search(r"ಹೂ\s*ಬಿಡುವ\s*ಹಂತ", t):
+        return "flowering"
+    return _best(t, STAGES)
 
 
 # Helpers for disease negation and unsupported issues
@@ -333,12 +348,18 @@ def is_repeat_intent(text: str) -> tuple[bool, bool]:
 
     is_specific_advisory = bool(
         re.search(r"(?:ಹಿಂದಿನ|ಹಳೆ|ಮೊದಲ)\s*(?:ಸಲಹೆ|ಮಾಹಿತಿ)", t)
+        or re.search(r"(?:ಭತ್ತದ|paddy)\s*ಸಲಹೆ", t)
         or re.search(r"\bprevious\s+(?:advice|advisory)\b", t)
     )
 
     rep_pats = [
         r"(?:ಮತ್ತೆ|ಇನ್ನೊಮ್ಮೆ|ಮತ್ತೊಮ್ಮೆ|ಪುನಃ)\s*(?:ಹೇಳಿ|ಹೇಳ್ತೀರಾ|ಹೇಳುತ್ತೀರಾ|ತಿಳಿಸಿ|ಹೇಳ್ರಿ|ಹೇಳು)",
         r"(?:ಅದನ್ನು|ಇದನ್ನು|ಸಲಹೆಯನ್ನು)\s*(?:ಮತ್ತೆ|ಇನ್ನೊಮ್ಮೆ|ಮತ್ತೊಮ್ಮೆ|ಪುನಃ)\s*(?:ಹೇಳಿ|ಹೇಳ್ತೀರಾ|ಹೇಳುತ್ತೀರಾ|ತಿಳಿಸಿ)",
+        r"ಆ\s*ಸಲಹೆಯನ್ನು\s*(?:ಮತ್ತೆ|ಇನ್ನೊಮ್ಮೆ|ಮತ್ತೊಮ್ಮೆ|ಪುನಃ)?\s*(?:ಹೇಳಿ|ಕೇಳಬೇಕು|ತಿಳಿಸಿ)",
+        r"(?:ಭತ್ತದ|paddy)\s*(?:ಸಲಹೆ|ಸಲಹೆಯನ್ನು)\s*(?:ಮತ್ತೆ|ಇನ್ನೊಮ್ಮೆ|ಮತ್ತೊಮ್ಮೆ|ಪುನಃ)\s*(?:ಕೊಡಿ|ಹೇಳಿ|ಕೇಳಬೇಕು)",
+        r"ಹಿಂದಿನ\s*ಸಲಹೆಯನ್ನು\s*(?:ಮತ್ತೆ\s*)?ಕೇಳಬೇಕು",
+        r"ಹಿಂದಿನ\s*ಸಲಹೆ\s*ಬಗ್ಗೆ\s*ಮತ್ತೆ",
+        r"ಅದಕ್ಕೆ\s*ಪರಿಹಾರ\s*ಏನು\s*ಇದೆ",
         r"(?:ಮತ್ತೆ|ಇನ್ನೊಮ್ಮೆ|ಮತ್ತೊಮ್ಮೆ)\s+ಹೇಳಿ",
         r"ಸರಿಯಾಗಿ\s*ಕೇಳಿಸಲಿಲ್ಲ",
         r"\b(?:repeat|say\s+that\s+again|say\s+again|repeat\s+that)\b",
@@ -380,11 +401,12 @@ def chemical_allowed(adv: dict, stage) -> bool:
 
 def keyterms():
     terms = []
-    for kws in list(CROPS.values()) + list(PROBLEMS.values()):
+    disease_aliases = [alias for disease in DISEASE_REGISTRY for alias in disease.aliases]
+    for kws in list(CROPS.values()) + [disease_aliases]:
         for k in kws:
             if any("\u0c80" <= ch <= "\u0cff" for ch in k) and " " not in k and k not in terms:
                 terms.append(k)
-    return terms
+    return terms[:200]
 
 
 @dataclass
@@ -478,12 +500,25 @@ def _parse_intake_answer(step: str, raw_text: str):
 
 class Session:
     def __init__(self, escalation_number="1800-180-1551"):
-        self.crop = self.problem = self.stage = None
+        self.active_crop = None
+        self.active_problem = None
+        self.stage = None
+        self.pending_question = None
+        self.pending_question_kind = None
+        self.pending_candidates = ()
+        self.pending_yes_candidates = ()
+        self.asked_distinguishing_symptoms = set()
+        self.asked_questions = set()
+        self.confirmation_pending = False
+        self.advisory_available = None
+        self.referral_given = False
         self.asks = {"crop": 0, "problem": 0, "stage": 0}
         self.advised = False
         self.last = None
         self.last_advisory = None
+        self.pending_match_method = None
         self.esc = escalation_number
+        self.conversation_started = False
         self.leaf_folder_intake = {
             "symptoms": None,
             "live_larvae": None,
@@ -495,6 +530,30 @@ class Session:
         }
         self.intake_step = None
         self.intake_completed = False
+
+    @property
+    def crop(self):
+        return self.active_crop
+
+    @crop.setter
+    def crop(self, value):
+        self.active_crop = value
+
+    @property
+    def problem(self):
+        return self.active_problem
+
+    @problem.setter
+    def problem(self, value):
+        self.active_problem = value
+
+    @property
+    def pending_disease_ids(self):
+        return self.pending_candidates
+
+    @pending_disease_ids.setter
+    def pending_disease_ids(self, value):
+        self.pending_candidates = tuple(value or ())
 
     def start_leaf_folder_intake(self) -> Reply:
         self.crop = "paddy"
@@ -558,17 +617,243 @@ class Session:
 
     def _reset_crop(self, new_crop):
         self.crop = new_crop
-        self.problem = None
+        active = next((d for d in DISEASE_REGISTRY if d.id == self.problem), None)
+        if active and active.crop != new_crop:
+            self.problem = None
+            self.advisory_available = None
+            self.referral_given = False
+            self.advised = False
+            self.last_advisory = None
+        old_candidates = set(self.pending_candidates)
+        compatible = tuple(
+            d.id for d in DISEASE_REGISTRY
+            if d.id in self.pending_candidates and d.crop == new_crop
+        )
+        self.pending_disease_ids = compatible
+        if set(compatible) != old_candidates:
+            self.asked_distinguishing_symptoms.clear()
+        if not compatible:
+            self.pending_match_method = None
+            self.pending_yes_candidates = ()
+            self.confirmation_pending = False
+            self.pending_question = None
+            self.pending_question_kind = None
         self.stage = None
-        self.advised = False
-        self.last_advisory = None
-        self.asks = {"crop": 0, "problem": 0, "stage": 0}
+        self.asks["crop"] = 0
+        self.asks["stage"] = 0
 
     def _ask(self, slot):
+        question = T["ask_" + slot][0]
+        if question in self.asked_questions:
+            return self._escalate("clarification_already_asked")
         self.asks[slot] += 1
         if self.asks[slot] > 2:
             return self._escalate("too_many_clarifications")
+        self.confirmation_pending = False
+        self.pending_question_kind = slot
         return self._remember(Reply(T["ask_" + slot], meta={"state": "ask_" + slot}))
+
+    def _ask_disease_confirmation(self, diseases):
+        candidate_ids = tuple(d.id for d in diseases)
+        if set(candidate_ids) != set(self.pending_disease_ids):
+            self.asked_distinguishing_symptoms.clear()
+        self.pending_disease_ids = candidate_ids
+        self.pending_yes_candidates = ()
+        self.confirmation_pending = True
+        self.pending_question_kind = "candidate_selection"
+        names = " / ".join(d.name_kn for d in diseases)
+        if self.pending_match_method == "weak" and len(diseases) == 1:
+            disease = diseases[0]
+            if disease.id == "arecanut_koleroga":
+                question = "ನೀವು ಅಡಿಕೆ ಬೆಳೆಯ ಕೊಳೆ ರೋಗ ಬಗ್ಗೆ ಕೇಳುತ್ತಿದ್ದೀರಾ? ಹೌದು ಅಥವಾ ಇಲ್ಲ ಎಂದು ಹೇಳಿ."
+            elif disease.id == "coconut_rhino_beetle":
+                question = "ನೀವು ತೆಂಗಿನ ಮರದಲ್ಲಿ ದುಂಬಿ ಸಮಸ್ಯೆ ಬಗ್ಗೆ ಹೇಳುತ್ತಿದ್ದೀರಾ? ಹೌದು ಅಥವಾ ಇಲ್ಲ ಎಂದು ಹೇಳಿ."
+            elif disease.id == "coconut_button_shedding":
+                question = "ನೀವು ತೆಂಗಿನ ಕಾಯಿಗಳು ಉದುರುವ ಸಮಸ್ಯೆ ಬಗ್ಗೆ ಹೇಳುತ್ತಿದ್ದೀರಾ? ಹೌದು ಅಥವಾ ಇಲ್ಲ ಎಂದು ಹೇಳಿ."
+            else:
+                question = f"ನೀವು {names} ಬಗ್ಗೆ ಕೇಳುತ್ತಿದ್ದೀರಾ? ಹೌದು ಅಥವಾ ಇಲ್ಲ ಎಂದು ಹೇಳಿ."
+        elif len(diseases) >= 3:
+            return self._ask_disambiguating_symptom(diseases)
+        elif len(diseases) == 2:
+            question = f"ಇವುಗಳಲ್ಲಿ ಯಾವುದು ನಿಮ್ಮ ಬೆಳೆಯ ಸಮಸ್ಯೆ: {names}?"
+        else:
+            question = f"ನೀವು ಹೇಳಿದ್ದು {names} ಆಗಿದೆಯೇ? ಹೌದು ಅಥವಾ ಇಲ್ಲ ಎಂದು ಹೇಳಿ."
+        if question == self.pending_question or question in self.asked_questions:
+            return self._ask_disambiguating_symptom(diseases)
+        return self._remember(Reply(
+            [question],
+            meta={"state": "confirm_disease", "candidate_ids": [d.id for d in diseases],
+                  "match_method": self.pending_match_method},
+        ))
+
+    def _ask_disambiguating_symptom(self, diseases):
+        questions = {
+            "yellowing": "ಎಲೆಗಳು ಹಳದಿಯಾಗಿವೆಯೇ?",
+            "leaf_spots": "ಎಲೆಗಳಲ್ಲಿ ಚುಕ್ಕೆಗಳಿವೆಯೇ?",
+            "rotting": "ಕಾಯಿ ಅಥವಾ ಬುಡ ಕೊಳೆಯುತ್ತಿದೆಯೇ?",
+            "nut_fall": "ಕಾಯಿಗಳು ಉದುರುತ್ತಿವೆಯೇ?",
+            "drying": "ಎಲೆಗಳು ಒಣಗುತ್ತಿವೆಯೇ?",
+            "oozing": "ಕಾಂಡದಿಂದ ರಸ ಸೋರುತ್ತಿದೆಯೇ?",
+            "wilting": "ಗಿಡ ಬಾಡುತ್ತಿದೆಯೇ?",
+            "grain_damage": "ಕಾಳುಗಳಿಗೆ ಹಾನಿಯಾಗಿದೆಯೇ?",
+            "stunted": "ಗಿಡದ ಬೆಳವಣಿಗೆ ಕುಂಠಿತವಾಗಿದೆಯೇ?",
+            "flower": "ಹೂಗೊಂಚಲು ಒಣಗಿದೆಯೇ?",
+            "crown": "ಮರದ ಮೊಗ್ಗು ಕೊಳೆಯುತ್ತಿದೆಯೇ?",
+        }
+        symptom_id = self._distinguishing_symptom_id(
+            diseases,
+            exclude=self.asked_distinguishing_symptoms | {
+                sid for sid, question in questions.items() if question in self.asked_questions
+            },
+        )
+        if symptom_id:
+            self.asked_distinguishing_symptoms.add(symptom_id)
+            question = questions[symptom_id]
+            self.pending_yes_candidates = tuple(
+                d.id for d in diseases if symptom_id in d.symptom_ids
+            )
+        else:
+            fallbacks = (
+                "ಎಲೆ, ಕಾಯಿ ಅಥವಾ ಕಾಂಡ—ಯಾವ ಭಾಗದಲ್ಲಿ ಹೆಚ್ಚು ತೊಂದರೆ ಇದೆ?",
+                "ಎಲೆ ಹಳದಿಯಾಗಿದೆಯೇ, ಚುಕ್ಕೆಗಳಿವೆಯೇ, ಅಥವಾ ಕಾಯಿ ಉದುರುತ್ತಿದೆಯೇ?",
+            )
+            question = next((q for q in fallbacks if q not in self.asked_questions), None)
+            if question is None:
+                return self._escalate("clarification_already_asked")
+            self.pending_yes_candidates = tuple(d.id for d in diseases)
+        self.pending_disease_ids = tuple(d.id for d in diseases)
+        self.confirmation_pending = True
+        self.pending_question_kind = "candidate_disambiguation"
+        return self._remember(Reply(
+            [question],
+            meta={"state": "clarify_disease_symptom",
+                  "candidate_ids": list(self.pending_disease_ids),
+                  "distinguishing_symptom": symptom_id},
+        ))
+
+    @staticmethod
+    def _distinguishing_symptom_id(diseases, exclude=()):
+        symptom_ids = list(dict.fromkeys(
+            symptom_id for disease in diseases for symptom_id in disease.symptom_ids
+        ))
+        separating = [
+            (abs(len(diseases) / 2 - sum(s in d.symptom_ids for d in diseases)), s)
+            for s in symptom_ids
+            if 0 < sum(s in d.symptom_ids for d in diseases) < len(diseases)
+            and s not in exclude
+        ]
+        return min(separating)[1] if separating else None
+
+    @staticmethod
+    def _distinguishing_symptom_question(diseases):
+        symptom_questions = {
+            "yellowing": "ಎಲೆಗಳು ಹಳದಿಯಾಗಿವೆಯೇ?",
+            "leaf_spots": "ಎಲೆಗಳಲ್ಲಿ ಚುಕ್ಕೆಗಳಿವೆಯೇ?",
+            "rotting": "ಕಾಯಿ ಅಥವಾ ಬುಡ ಕೊಳೆಯುತ್ತಿದೆಯೇ?",
+            "nut_fall": "ಕಾಯಿಗಳು ಉದುರುತ್ತಿವೆಯೇ?",
+            "drying": "ಎಲೆಗಳು ಒಣಗುತ್ತಿವೆಯೇ?",
+            "oozing": "ಕಾಂಡದಿಂದ ರಸ ಸೋರುತ್ತಿದೆಯೇ?",
+            "wilting": "ಗಿಡ ಬಾಡುತ್ತಿದೆಯೇ?",
+            "grain_damage": "ಕಾಳುಗಳಿಗೆ ಹಾನಿಯಾಗಿದೆಯೇ?",
+            "stunted": "ಗಿಡದ ಬೆಳವಣಿಗೆ ಕುಂಠಿತವಾಗಿದೆಯೇ?",
+            "flower": "ಹೂಗೊಂಚಲು ಒಣಗಿದೆಯೇ?",
+            "crown": "ಮರದ ಮೊಗ್ಗು ಕೊಳೆಯುತ್ತಿದೆಯೇ?",
+        }
+        symptom_id = Session._distinguishing_symptom_id(diseases)
+        if symptom_id in symptom_questions:
+            return symptom_questions[symptom_id]
+        return "ಎಲೆ, ಕಾಯಿ ಅಥವಾ ಕಾಂಡ—ಯಾವ ಭಾಗದಲ್ಲಿ ಹೆಚ್ಚು ತೊಂದರೆ ಇದೆ?"
+
+    def _ask_symptoms(self, progress=False):
+        prompts = {
+            "paddy": "ಎಲೆ ಹಳದಿಯಾಗಿದೆಯೇ, ಚುಕ್ಕೆಗಳಿವೆಯೇ, ಅಥವಾ ಕಾಳಿಗೆ ತೊಂದರೆಯಿದೆಯೇ?",
+            "coconut": "ಎಲೆ ಹಳದಿಯಾಗಿದೆಯೇ, ಕಾಯಿ ಉದುರುತ್ತಿವೆಯೇ, ಅಥವಾ ಮೊಗ್ಗು ಕೊಳೆಯುತ್ತಿದೆಯೇ?",
+            "arecanut": "ಕಾಯಿ ಕೊಳೆದು ಉದುರುತ್ತಿದೆಯೇ, ಎಲೆ ಹಳದಿಯಾಗಿದೆಯೇ, ಅಥವಾ ಕಾಂಡದ ಬುಡ ಕೊಳೆಯುತ್ತಿದೆಯೇ?",
+        }
+        if progress:
+            self.asks["problem"] = 0
+        else:
+            self.asks["problem"] += 1
+            if self.asks["problem"] > 2:
+                return self._escalate("too_many_clarifications")
+        self.pending_disease_ids = ()
+        self.pending_yes_candidates = ()
+        self.asked_distinguishing_symptoms.clear()
+        self.pending_match_method = None
+        self.confirmation_pending = False
+        self.pending_question_kind = "symptoms"
+        prompt = prompts.get(self.crop, T["ask_problem"][0])
+        if prompt in self.asked_questions:
+            alternatives = {
+                "paddy": "ಎಲೆಗಳಲ್ಲೇ ಸಮಸ್ಯೆಯೇ, ಅಥವಾ ತೆನೆ ಮತ್ತು ಕಾಳಿನಲ್ಲೂ ತೊಂದರೆಯಿದೆಯೇ?",
+                "coconut": "ಬುಡದಲ್ಲಿ ರಸ ಸೋರುತ್ತಿದೆಯೇ, ಅಥವಾ ಕಾಯಿಗಳು ಉದುರುತ್ತಿವೆಯೇ?",
+                "arecanut": "ಕಾಯಿಯಲ್ಲಿ ಕೊಳೆ ಇದೆಯೇ, ಅಥವಾ ಕಾಂಡದ ಬುಡದಲ್ಲಿ ತೊಂದರೆಯೇ?",
+            }
+            prompt = alternatives.get(self.crop, "ಎಲೆ, ಕಾಯಿ ಅಥವಾ ಕಾಂಡದಲ್ಲಿ ಯಾವುದು ಹೆಚ್ಚು ಬಾಧಿತವಾಗಿದೆ?")
+            if prompt in self.asked_questions:
+                return self._escalate("clarification_already_asked")
+        return self._remember(Reply([prompt],
+                                    meta={"state": "ask_problem", "symptom_prompt": True,
+                                          "crop": self.crop}))
+
+    def _unavailable_disease(self, disease):
+        if self.problem != disease.id:
+            self.referral_given = False
+            self.stage = None
+            self.advised = False
+            self.last_advisory = None
+        self.crop = disease.crop
+        self.problem = disease.id
+        self.advisory_available = False
+        self.advised = False
+        self.pending_disease_ids = ()
+        self.pending_yes_candidates = ()
+        self.confirmation_pending = False
+        self.pending_question_kind = "another_problem"
+        if self.referral_given:
+            return self._ask_another_problem()
+        self.referral_given = True
+        return self._remember(Reply(
+            [f"ನೀವು ಹೇಳಿದ್ದು {disease.name_kn} ಎಂದು ಅರ್ಥಮಾಡಿಕೊಂಡಿದ್ದೇನೆ.",
+             "ಈ ಸಮಸ್ಯೆಗೆ ಪರಿಶೀಲಿತ ಸಲಹೆ ನನ್ನಲ್ಲಿ ಲಭ್ಯವಿಲ್ಲ. ದಯವಿಟ್ಟು ಹತ್ತಿರದ ಕೃಷಿ ಅಧಿಕಾರಿ ಅಥವಾ ರೈತ ಸಂಪರ್ಕ ಕೇಂದ್ರವನ್ನು ಸಂಪರ್ಕಿಸಿ.",
+             "ಬೇರೆ ಸಮಸ್ಯೆ ಬಗ್ಗೆ ಮಾತನಾಡಲು ಬಯಸುತ್ತೀರಾ?"],
+            end=False,
+            meta={"state": "disease_advisory_unavailable", "crop": disease.crop,
+                  "problem": disease.id, "reviewed": False, "referral_given": True},
+        ))
+
+    def _ask_another_problem(self):
+        self.pending_question_kind = "another_problem"
+        self.confirmation_pending = False
+        options = ("ಬೇರೆ ಸಮಸ್ಯೆ ಬಗ್ಗೆ ಮಾತನಾಡಲು ಬಯಸುತ್ತೀರಾ?", "ಇನ್ನೊಂದು ಸಮಸ್ಯೆ ಇದ್ದರೆ ಹೇಳಿ.")
+        question = next((candidate for candidate in options if candidate not in self.asked_questions), None)
+        if question is None:
+            self.pending_question_kind = None
+            return self._remember(Reply(T["bye"], end=True, meta={"state": "bye"}))
+        return self._remember(Reply([question],
+                                    meta={"state": "ask_another_problem", "crop": self.crop,
+                                          "problem": self.problem}))
+
+    def _resolve_candidate(self, disease):
+        if self.problem != disease.id:
+            self.referral_given = False
+            self.stage = None
+            self.advised = False
+            self.last_advisory = None
+        self.crop = disease.crop
+        self.problem = disease.id
+        self.advisory_available = disease.has_advisory
+        self.pending_disease_ids = ()
+        self.pending_yes_candidates = ()
+        self.pending_match_method = None
+        self.confirmation_pending = False
+        self.pending_question_kind = None
+        if not disease.has_advisory:
+            return self._unavailable_disease(disease)
+        advisory = KB[disease.id]
+        if advisory.get("needs_stage") and not self.stage:
+            return self._ask("stage")
+        return self._advise(advisory)
 
     def _escalate(self, why):
         return Reply(T["escalate"] + T["bye"], end=True,
@@ -578,9 +863,22 @@ class Session:
     def _remember(self, r):
         if not r.meta.get("repeated"):
             self.last = r
+            question_states = {
+                "ask_crop", "ask_problem", "ask_stage", "confirm_disease",
+                "clarify_disease_symptom", "ask_another_problem", "followup_options",
+                "disease_advisory_unavailable", "repeat_clarification",
+            }
+            self.pending_question = (
+                (str(r.sentences[-1]) if r.meta.get("state") == "disease_advisory_unavailable"
+                 else " ".join(str(sentence) for sentence in r.sentences))
+                if r.meta.get("state") in question_states else None
+            )
+            if self.pending_question:
+                self.asked_questions.add(self.pending_question)
         return r
 
     def respond(self, text: str) -> Reply:
+        self.conversation_started = True
         t = normalize(text)
         prev_crop = self.crop
         prev_problem = self.problem
@@ -591,6 +889,67 @@ class Session:
         # Explicit call-ending requests must work in every dialogue state
         if is_end_call_intent(t):
             return Reply(T["bye"], end=True, meta={"state": "bye"})
+
+        if self.pending_question_kind == "post_replay":
+            self.pending_question_kind = None
+            self.pending_question = None
+            if _is_no_answer(t):
+                return self._remember(Reply(T["bye"], end=True, meta={"state": "bye"}))
+            self.problem = None
+            self.advised = False
+            self.advisory_available = None
+            self.referral_given = False
+            if _is_yes_answer(t) or not (find_crop(t) or find_problem(t, crop=self.crop)):
+                return self._ask_symptoms(progress=True)
+
+        # Resolve the explicit repeat/new-question prompt before generic
+        # "already advised" handling can return that same prompt again.
+        if self.pending_question_kind in ("repeat_or_new", "repeat_clarification"):
+            is_rep_pending, _ = is_repeat_intent(t)
+            yes = _is_yes_answer(t) and ("ಬೇರೆ" not in t or is_rep_pending)
+            no = _is_no_answer(t)
+            new_question = any(phrase in t for phrase in (
+                "ಬೇರೆ ಪ್ರಶ್ನೆ", "ಹೊಸ ಪ್ರಶ್ನೆ", "ಇನ್ನೊಂದು ಪ್ರಶ್ನೆ", "ಬೇರೆ ಬೆಳೆಯ ಬಗ್ಗೆ",
+                "another question", "new question", "different crop",
+            ))
+            # Explicit repeat language wins over the "different crop" substring
+            # in answers such as "not another crop, repeat the advice".
+            if self.last_advisory and (yes or is_rep_pending):
+                self.pending_question = None
+                self.pending_question_kind = "post_replay"
+                return self._remember(Reply(
+                    self.last_advisory.sentences,
+                    sms=None,
+                    meta={**self.last_advisory.meta, "repeated": True},
+                ))
+            if no:
+                self.pending_question = None
+                self.pending_question_kind = None
+                self.advised = False
+            elif new_question and not is_rep_pending:
+                self.pending_question = None
+                self.pending_question_kind = None
+                self.advised = False
+                self.problem = None
+                self.advisory_available = None
+                self.referral_given = False
+            elif find_crop(t) or find_problem(t, crop=self.crop):
+                self.pending_question = None
+                self.pending_question_kind = None
+                self.advised = False
+            elif self.pending_question_kind == "repeat_clarification":
+                # A second unclear answer leaves repeat mode instead of looping.
+                self.pending_question = None
+                self.pending_question_kind = None
+                self.advised = False
+                return self._ask_symptoms(progress=True)
+            else:
+                self.pending_question_kind = "repeat_clarification"
+                clarification = Reply(
+                    ["ಹಿಂದಿನ ಸಲಹೆ ಮತ್ತೆ ಬೇಕೇ, ಅಥವಾ ಹೊಸ ಪ್ರಶ್ನೆಯೇ?"],
+                    meta={"state": "repeat_clarification", "crop": self.crop},
+                )
+                return self._remember(clarification)
 
         # 2. Global Intent C: Repeat
         # Supports natural variations, pending question repetition, and specific advisory replay
@@ -648,10 +1007,39 @@ class Session:
         if self.intake_step is not None:
             return self._handle_leaf_folder_intake_step(t, text)
 
+        # A referral leaves the call open. Treat the next substantive utterance
+        # as a new issue, while yes/no answers resolve the explicit follow-up.
+        if self.pending_question_kind == "another_problem":
+            if _is_no_answer(t):
+                self.pending_question = None
+                self.pending_question_kind = None
+                return self._remember(Reply(T["bye"], end=True, meta={"state": "bye"}))
+            if _is_yes_answer(t):
+                self.problem = None
+                self.advisory_available = None
+                self.referral_given = False
+                self.advised = False
+                self.pending_question_kind = None
+                return self._ask_symptoms(progress=True)
+            self.pending_disease_ids = ()
+            self.pending_yes_candidates = ()
+            self.pending_match_method = None
+            self.confirmation_pending = False
+            self.pending_question = None
+            self.pending_question_kind = None
+
         # 4. Check explicit new issue (Bug B)
         new_issue = is_new_issue(t)
         if new_issue:
             self.problem = None
+            self.advisory_available = None
+            self.referral_given = False
+            self.pending_disease_ids = ()
+            self.pending_yes_candidates = ()
+            self.pending_match_method = None
+            self.confirmation_pending = False
+            self.pending_question = None
+            self.pending_question_kind = None
             self.stage = None
             self.advised = False
             self.last_advisory = None
@@ -692,16 +1080,171 @@ class Session:
                 meta={"state": "unsupported_yield", "crop": self.crop}
             ))
 
-        # 6. Extract crop, problem, stage
-        crop = find_crop(t)
+        # 6. Extract crop, problem, stage. A crop after an explicit correction
+        # takes precedence over the crop being rejected earlier in the sentence.
+        crop = find_crop_correction(t) or find_crop(t)
         if crop:
             self.asks["crop"] = 0
-            if self.crop and self.crop != crop:
+            if self.crop != crop:
                 self._reset_crop(crop)
             else:
                 self.crop = crop
+                # If a problem was provided before crop was known, verify compatibility
+                if self.problem and KB.get(self.problem, {}).get("crop") != self.crop:
+                    self.problem = None
+                    self.advisory_available = None
+                    self.referral_given = False
+                    self.stage = None
+                    self.advised = False
+                    self.last_advisory = None
+                    self.asks["problem"] = 0
+                    self.asks["stage"] = 0
 
-        prob = find_problem(t, crop=self.crop)
+        match = match_disease(
+            t, self.crop, DISEASE_REGISTRY,
+            crop_explicit=bool(crop or self.crop),
+        )
+        prob = None
+        negated_match_ids = {
+            disease.id for disease in DISEASE_REGISTRY
+            if any(_is_kw_negated(t, alias)
+                   for alias in disease.aliases + disease.confirmation_aliases)
+        }
+        if match.ids and set(match.ids) <= negated_match_ids:
+            match = type(match)((), None, 0.0, ())
+
+        # A new, unrecognized disease statement starts fresh symptom intake;
+        # it must not replay a stale disease-choice prompt.
+        if (self.pending_disease_ids and not match.ids
+                and any(marker in t for marker in ("ರೋಗ", "disease", "problem"))):
+            self.pending_disease_ids = ()
+            self.pending_yes_candidates = ()
+            self.pending_match_method = None
+            self.confirmation_pending = False
+            self.pending_question = None
+            self.pending_question_kind = None
+            self.problem = None
+            self.advisory_available = None
+            self.referral_given = False
+            self.advised = False
+
+        # Resolve, narrow, or distinguish the saved candidates before starting
+        # another generic question.
+        if self.pending_disease_ids:
+            positive = _is_yes_answer(t)
+            negative = _is_no_answer(t)
+            pending = [d for d in DISEASE_REGISTRY if d.id in self.pending_disease_ids]
+            # Never carry a candidate from another crop across turns. An
+            # explicitly named crop was already applied above via _reset_crop.
+            if self.crop:
+                pending = [d for d in pending if d.crop == self.crop]
+                self.pending_disease_ids = tuple(d.id for d in pending)
+            if not pending:
+                self.pending_disease_ids = ()
+                self.pending_yes_candidates = ()
+                self.pending_match_method = None
+                self.confirmation_pending = False
+                self.pending_question = None
+                self.pending_question_kind = None
+            else:
+                named_pending = [d for d in pending if match.method == "exact" and d.id in match.ids]
+                if len(named_pending) == 1:
+                    return self._resolve_candidate(named_pending[0])
+
+                if self.pending_question_kind == "candidate_disambiguation" and (positive or negative):
+                    yes_ids = set(self.pending_yes_candidates)
+                    selected_ids = yes_ids if positive else {d.id for d in pending} - yes_ids
+                    selected = [d for d in pending if d.id in selected_ids]
+                    if len(selected) == 1:
+                        return self._resolve_candidate(selected[0])
+                    if selected:
+                        if set(d.id for d in selected) != set(self.pending_disease_ids):
+                            self.asked_distinguishing_symptoms.clear()
+                        self.pending_disease_ids = tuple(d.id for d in selected)
+                        return self._ask_disambiguating_symptom(selected)
+
+                if positive and len(pending) == 1:
+                    return self._resolve_candidate(pending[0])
+                if negative:
+                    self.pending_disease_ids = ()
+                    self.pending_yes_candidates = ()
+                    self.pending_match_method = None
+                    self.confirmation_pending = False
+                    self.pending_question_kind = None
+                    return self._ask_symptoms(progress=True)
+
+                if crop and len(pending) == 1 and self.pending_match_method == "exact":
+                    return self._resolve_candidate(pending[0])
+
+                symptoms = match_symptoms(t)
+                if symptoms:
+                    narrowed = [d for d in pending if symptoms.intersection(d.symptom_ids)]
+                    if len(narrowed) == 1:
+                        return self._resolve_candidate(narrowed[0])
+                    if narrowed and {d.id for d in narrowed} != {d.id for d in pending}:
+                        self.asked_distinguishing_symptoms.clear()
+                        self.pending_disease_ids = tuple(d.id for d in narrowed)
+                        if len(narrowed) >= 3:
+                            return self._ask_disambiguating_symptom(narrowed)
+                        return self._ask_disease_confirmation(narrowed)
+
+                if len(pending) >= 3 or self.pending_question_kind == "candidate_disambiguation":
+                    return self._ask_disambiguating_symptom(pending)
+                if len(pending) == 2 and symptoms:
+                    return self._ask_disambiguating_symptom(pending)
+                if len({d.crop for d in pending}) > 1 and not self.crop:
+                    return self._ask("crop")
+                return self._ask_disease_confirmation(pending)
+
+        if match.ids:
+            matched = [d for d in DISEASE_REGISTRY if d.id in match.ids]
+            if match.method == "weak":
+                self.pending_disease_ids = tuple(d.id for d in matched)
+                self.pending_match_method = "weak"
+                return self._ask_disease_confirmation(matched)
+            if len(matched) == 1 and self.crop is None:
+                if (matched[0].id == "arecanut_koleroga" and any(
+                    alias in t for alias in ("ಮಹಾಳಿ", "ಮಹಾಲಿ", "koleroga", "mahali")
+                )):
+                    self.crop = "arecanut"
+                    self.asks["crop"] = 0
+                elif matched[0].id == "coconut_root_wilt":
+                    self.crop = "coconut"
+                    self.asks["crop"] = 0
+                elif matched[0].id == "coconut_bud_rot" and "ಸುಳಿ" in t:
+                    self.crop = "coconut"
+                else:
+                    self.problem = matched[0].id
+                self.pending_disease_ids = (matched[0].id,)
+                self.pending_match_method = match.method
+                if self.crop is None:
+                    return self._ask("crop")
+            if len({d.crop for d in matched}) > 1 and self.crop is None:
+                self.pending_disease_ids = tuple(d.id for d in matched)
+                self.pending_match_method = "ambiguous" if len(matched) > 1 else match.method
+                return self._ask("crop")
+            if match.method == "fuzzy" or len(matched) > 1:
+                self.pending_disease_ids = tuple(d.id for d in matched)
+                self.pending_match_method = match.method
+                return self._ask_disease_confirmation(matched)
+            selected = matched[0]
+            if not selected.has_advisory:
+                return self._unavailable_disease(selected)
+            prob = selected.id
+
+        # A symptom match is a tentative candidate only. It must be confirmed
+        # and never enters the advisory path on its own.
+        if not prob and self.crop and not is_disease_negated(t) and not neg_probs:
+            symptoms = match_symptoms(t)
+            candidates = rank_disease_candidates(symptoms, self.crop, DISEASE_REGISTRY)
+            if candidates:
+                best_score = candidates[0].score
+                tied = [c for c in candidates if c.score == best_score]
+                self.pending_disease_ids = tuple(c.id for c in tied)
+                self.pending_match_method = "symptom"
+                return self._ask_disease_confirmation(
+                    [d for d in DISEASE_REGISTRY if d.id in self.pending_disease_ids]
+                )
 
         # Conservative guard: if crop is unknown, generic rot must not silently infer arecanut
         if self.crop is None and crop is None:
@@ -718,17 +1261,23 @@ class Session:
         if is_diff_problem:
             # Clear previous problem's stage, advisory-completion state, stale repeat reference, and reset clarification counters
             self.problem = prob
+            self.advisory_available = True
+            self.referral_given = False
             self.stage = None
             self.advised = False
             self.last_advisory = None
             self.asks["problem"] = 0
             self.asks["stage"] = 0
         elif prob:
+            if self.problem != prob:
+                self.referral_given = False
             self.problem = prob
+            self.advisory_available = True
             self.asks["problem"] = 0
             if not self.crop:
-                self.crop = KB[prob]["crop"]
-                self.asks["crop"] = 0
+                if prob == "coconut_bud_rot" and "ಸುಳಿ" in t:
+                    self.crop = "coconut"
+                    self.asks["crop"] = 0
 
         st = find_stage(t)
         if st:
@@ -741,6 +1290,7 @@ class Session:
         if self.advised and not is_diff_problem and not st and not new_issue:
             if self.problem == "paddy_leaf_folder" and any(k in t for k in ["ಔಷಧ", "ಔಷಧಿ", "ಸಿಂಪಡಿಸ", "ರಾಸಾಯನಿಕ", "chemical", "spray", "pesticide"]):
                 return self.start_leaf_folder_intake()
+            self.pending_question_kind = "repeat_or_new"
             return self._remember(Reply(
                 T["followup_options"],
                 meta={"state": "followup_options", "crop": self.crop}
@@ -766,8 +1316,11 @@ class Session:
                 meta={"state": "unsupported_crop", "crop": self.crop}
             ))
 
+        if self.problem and self.advisory_available is False:
+            return self._ask_symptoms(progress=bool(match_symptoms(t)))
+
         if not self.problem:
-            return self._ask("problem")
+            return self._ask_symptoms(progress=bool(match_symptoms(t)))
         if self.problem == "paddy_leaf_folder" and any(k in t for k in ["ಔಷಧ", "ಔಷಧಿ", "ಸಿಂಪಡಿಸ", "ರಾಸಾಯನಿಕ", "chemical", "spray", "pesticide"]):
             return self.start_leaf_folder_intake()
         adv = KB[self.problem]
@@ -776,6 +1329,8 @@ class Session:
         return self._advise(adv)
 
     def _advise(self, adv):
+        self.advisory_available = True
+        self.referral_given = False
         stage_key = self.stage if self.stage in adv["advice_kn"] else "default"
         s = [f"ನೀವು {CROP_KN[adv['crop']]} ಬೆಳೆಯ {adv['name_kn']} ಬಗ್ಗೆ ಕೇಳುತ್ತಿದ್ದೀರಿ ಎಂದು ಅರ್ಥವಾಯಿತು."]
         s += adv["advice_kn"][stage_key]

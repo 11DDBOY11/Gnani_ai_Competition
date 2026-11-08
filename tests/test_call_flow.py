@@ -1,4 +1,4 @@
-"""Whole-call test with fake STT/TTS: no network, no credits."""
+﻿"""Whole-call test with fake STT/TTS: no network, no credits."""
 import asyncio, json, time
 from fastapi.testclient import TestClient
 from app import server
@@ -42,7 +42,7 @@ def next_reply(ws, limit=60):
         m = ws.receive()
         if m.get("text"):
             j = json.loads(m["text"])
-            if j["type"] == "reply":
+            if j["type"] == "atomic_reply":
                 return j
     raise AssertionError("no reply")
 

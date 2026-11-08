@@ -28,11 +28,12 @@ class Config:
         self.min_speech_ms = int(e("MIN_SPEECH_MS", "200"))
         self.min_silence_ms = int(e("MIN_SILENCE_MS", "600"))
         self.silence_timeout_s = float(e("SILENCE_TIMEOUT_S", "15"))
-        self.keyterms_max = int(e("KEYTERMS_MAX", "40"))
+        self.keyterms_max = int(e("KEYTERMS_MAX", "200"))
         self.escalation_number = e("ESCALATION_NUMBER", "1800-180-1551")
         self.cache_dir = e("CACHE_DIR", "cache/tts")
         self.log_dir = e("LOG_DIR", "logs")
         self.call_token = e("CALL_TOKEN", "")
+        self.exotel_stream_token = e("EXOTEL_STREAM_TOKEN", "").strip()
         self.max_calls = int(e("MAX_CALLS", "3"))
 
 

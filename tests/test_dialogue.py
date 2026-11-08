@@ -26,12 +26,13 @@ def test_bud_rot_not_confused_with_koleroga():
     assert d.find_problem("ಅಡಿಕೆ ಕೊಳೆ ರೋಗ ಬಂದಿದೆ") == "arecanut_koleroga"
 
 
-def test_escalates_after_two_failed_clarifications():
+def test_does_not_repeat_same_crop_clarification():
     s = Session()
-    assert s.respond("ಹ್ಞೂಂ").meta["state"] == "ask_crop"
-    assert s.respond("ಗೊತ್ತಿಲ್ಲ").meta["state"] == "ask_crop"
-    r = s.respond("ಏನೋ")
-    assert r.end and r.meta["state"] == "escalated"
+    first = s.respond("ಹ್ಞೂಂ")
+    assert first.meta["state"] == "ask_crop"
+    second = s.respond("ಗೊತ್ತಿಲ್ಲ")
+    assert second.end and second.meta["state"] == "escalated"
+    assert second.sentences != first.sentences
 
 
 def test_english_and_codemix():

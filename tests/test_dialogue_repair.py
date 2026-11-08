@@ -1,5 +1,6 @@
 """Regression tests for dialogue repair based on live conversation failure."""
 from app.dialogue import Session, find_problem, find_crop, is_disease_negated, is_low_yield, KB, usable_crops, T
+import pytest
 
 
 def test_incomplete_crop_generic_rot_clarifies_not_arecanut():
@@ -87,6 +88,99 @@ def test_explicit_repeat_request_replays_advisory():
     assert "ಬೆಂಕಿ ರೋಗ" in " ".join(r2.sentences)
 
 
+@pytest.mark.parametrize("phrase", [
+    "ಹೌದು, ಕೇಳಬೇಕು.", "ಹೌದು.", "ಹೌದ್ರಿ.", "ಹೂಂ.", "ಸರಿ.",
+    "ಹಿಂದಿನ ಸಲಹೆಯನ್ನು ಮತ್ತೆ ಕೇಳಬೇಕು.", "ಆ ಸಲಹೆಯನ್ನು ಮತ್ತೆ ಹೇಳಿ.",
+    "ಅದಕ್ಕೆ ಪರಿಹಾರ ಏನು ಇದೆ?",
+    "ಬೇರೆ ಬೆಳೆಯ ಬಗ್ಗೆ ಪ್ರಶ್ನೆಯಲ್ಲ, ಹಿಂದಿನ ಸಲಹೆ ಬಗ್ಗೆ ಮತ್ತೆ.",
+])
+def test_pending_repeat_question_replays_advisory_once(phrase):
+    s = Session()
+    initial = s.respond("ಭತ್ತ ಬೆಂಕಿ ರೋಗ")
+    assert initial.meta["state"] == "advised"
+    s.respond("ಏನು ಮಾಡಬೇಕು?")
+    assert s.pending_question_kind == "repeat_or_new"
+
+    replay = s.respond(phrase)
+    assert replay.meta.get("repeated") is True
+    assert replay.sentences == initial.sentences
+    assert replay.sms is None
+
+    # The same affirmative in the next turn must not replay a second time or
+    # bring back the identical pending repeat question.
+    next_turn = s.respond("ಹೌದು.")
+    assert next_turn.meta.get("repeated") is not True
+    assert next_turn.meta.get("state") != "followup_options"
+
+
+@pytest.mark.parametrize("phrase", [
+    "ಭತ್ತದ ಸಲಹೆಯನ್ನು ಮತ್ತೆ ಕೊಡಿ.",
+    "ಆ ಸಲಹೆಯನ್ನು ಮತ್ತೆ ಹೇಳಿ.",
+    "ಹಿಂದಿನ ಸಲಹೆಯನ್ನು ಮತ್ತೆ ಕೇಳಬೇಕು.",
+    "ಹೌದು, ಕೇಳಬೇಕು.",
+    "ಹೌದು.",
+])
+def test_repeat_prompt_phrases_replay_saved_advisory_once(phrase):
+    session = Session()
+    saved = session.respond("ಭತ್ತದ ಬೆಳೆಯಲ್ಲಿ ಬೆಂಕಿ ರೋಗ ಬಂದಿದೆ")
+    assert saved.meta["state"] == "advised"
+    session.respond("ಏನು ಮಾಡಬೇಕು?")
+    assert session.pending_question_kind == "repeat_or_new"
+
+    replay = session.respond(phrase)
+    assert replay.meta["repeated"] is True
+    assert replay.sentences == saved.sentences
+    assert replay.sms is None
+
+    next_turn = session.respond("ಹೌದು.")
+    assert next_turn.meta.get("repeated") is not True
+    assert next_turn.meta.get("state") != "followup_options"
+
+
+def test_pending_repeat_question_handles_new_question_without_replay():
+    s = Session()
+    s.respond("ಭತ್ತ ಬೆಂಕಿ ರೋಗ")
+    s.respond("ಏನು ಮಾಡಬೇಕು?")
+    response = s.respond("ಬೇರೆ ಪ್ರಶ್ನೆ ಇದೆ")
+    assert response.meta.get("repeated") is not True
+    assert response.meta.get("state") != "followup_options"
+    assert s.pending_question_kind != "repeat_or_new"
+
+
+def test_repeat_prompt_ambiguity_clarifies_once_then_exits_repeat_state():
+    s = Session()
+    s.respond("ಭತ್ತ ಬೆಂಕಿ ರೋಗ")
+    s.respond("ಏನು ಮಾಡಬೇಕು?")
+    first = s.respond("ಸರಿ, ಬೇರೆ")
+    assert first.meta["state"] == "repeat_clarification"
+    second = s.respond("ಗೊತ್ತಿಲ್ಲ")
+    assert second.meta["state"] != "repeat_clarification"
+    assert s.pending_question_kind != "repeat_clarification"
+
+
+def test_paddy_leaf_folder_retains_flowering_stage_and_active_case():
+    session = Session()
+    first = session.respond("ನಮ್ಮ ಭತ್ತದ ಗದ್ದೆಯಲ್ಲಿ ಎಲೆ ಸುತ್ತಿಕೊಂಡಿದೆ")
+    assert first.meta["state"] == "ask_stage"
+    assert session.crop == "paddy"
+    assert session.problem == "paddy_leaf_folder"
+
+    advisory = session.respond("ಹೂ ಬಿಡುವ ಹಂತದಲ್ಲಿದೆ")
+    assert advisory.meta["state"] == "advised"
+    assert session.stage == "flowering"
+
+    repeated_stage = session.respond("ಹೂ ಬಿಡುವ ಹಂತದಲ್ಲಿದೆ")
+    assert repeated_stage.meta["state"] == "advised"
+    assert repeated_stage.meta["state"] != "ask_stage"
+    assert session.stage == "flowering"
+
+    same_case = session.respond("ಭತ್ತದ ಎಲೆ ಮಡಚಿಕೊಂಡಿದೆ")
+    assert same_case.meta["state"] not in ("ask_crop", "ask_problem")
+    assert session.crop == "paddy"
+    assert session.problem == "paddy_leaf_folder"
+    assert session.stage == "flowering"
+
+
 def test_supported_paddy_leaf_folder_stage_question_still_works():
     """Supported paddy leaf folder symptom still triggers stage question and completes advisory."""
     s = Session()
@@ -171,11 +265,15 @@ def test_mixed_negation_and_affirmation_preserves_affirmative_issue():
     assert "ಬೆಂಕಿ ರೋಗ" not in r.meta.get("advisory_id", "")
 
 
-def test_coconut_beetle_advisory_then_coconut_bud_rot_handles_bud_rot():
-    """Coconut beetle advisory -> coconut bud rot -> handles bud rot correctly."""
+def test_coconut_beetle_requires_confirmation_then_bud_rot_handles_correctly():
+    """Bare beetle mention is confirmed before advisory; bud rot still works."""
     s = Session()
     r1 = s.respond("ತೆಂಗಿನ ಮರದಲ್ಲಿ ದುಂಬಿ ಕಾಟ ಇದೆ.")
     assert s.crop == "coconut"
+    assert s.problem is None
+    assert r1.meta["state"] == "confirm_disease"
+
+    r1 = s.respond("ಹೌದು")
     assert s.problem == "coconut_rhino_beetle"
     assert r1.meta["state"] == "advised"
 

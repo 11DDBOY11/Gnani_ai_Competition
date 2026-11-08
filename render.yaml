@@ -12,6 +12,8 @@ services:
         sync: false
       - key: CALL_TOKEN
         sync: false
+      - key: EXOTEL_STREAM_TOKEN
+        sync: false
       - key: STT_LANGUAGE
         value: kn-IN
       - key: TTS_MODEL

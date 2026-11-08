@@ -138,46 +138,76 @@ class TTS:
         return self.dir / (hashlib.sha1(k.encode("utf-8")).hexdigest() + ".pcm")
 
     async def _ensure(self):
-        if self.ws is None:
+        if self.ws is None or getattr(self.ws, "state", None) not in (None, 1): # 1 is OPEN in websockets
+            if self.ws is not None:
+                try:
+                    await self.ws.close()
+                except Exception:
+                    pass
+                self.ws = None
             from websockets.asyncio.client import connect
             from websockets.exceptions import InvalidStatus
             try:
                 self.ws = await connect(self.c.tts_url, additional_headers={"X-API-Key-ID": self.c.api_key},
-                                        max_size=None, open_timeout=10)
+                                        max_size=None, open_timeout=10, ping_interval=20, ping_timeout=20)
             except InvalidStatus as e:
                 code = getattr(getattr(e, "response", None), "status_code", getattr(e, "status_code", None))
                 if code in (401, 403) or "401" in str(e) or "403" in str(e):
                     raise RuntimeError("Gnani rejected the API key (HTTP 401). Run python -m scripts.check_key") from None
                 raise
 
+    async def _stream_single(self, text):
+        """Execute a single attempt to stream synthesis from Gnani TTS."""
+        await self._ensure()
+        await self.ws.send(json.dumps(tts_request(text, self.c)))
+        first = True
+        completed = False
+        async for raw in self.ws:
+            msg = json.loads(raw)
+            t = msg.get("type")
+            if t == "audio":
+                b = base64.b64decode(msg.get("data", {}).get("audio") or "")
+                if first and b.startswith(b"RIFF"):
+                    b = b[44:]
+                if b:
+                    first = False
+                    yield b
+            elif t == "complete":
+                completed = True
+                return
+            elif t == "error":
+                raise TTSError(msg.get("message", "tts error"))
+        if not completed:
+            raise TTSError("tts socket closed before complete message")
+
     async def _stream(self, text):
         async with self.lock:
+            delivered_any = False
             try:
-                await self._ensure()
-                await self.ws.send(json.dumps(tts_request(text, self.c)))
-                first = True
-                async for raw in self.ws:
-                    msg = json.loads(raw)
-                    t = msg.get("type")
-                    if t == "audio":
-                        b = base64.b64decode(msg["data"]["audio"] or "")
-                        if first and b.startswith(b"RIFF"):
-                            b = b[44:]
-                        if b:
-                            first = False
-                            yield b
-                    elif t == "complete":
-                        return
-                    elif t == "error":
-                        raise TTSError(msg.get("message", "tts error"))
-                raise TTSError("tts socket closed")
-            except Exception:
+                async for chunk in self._stream_single(text):
+                    delivered_any = True
+                    yield chunk
+            except Exception as e:
                 try:
                     if self.ws:
                         await self.ws.close()
                 finally:
                     self.ws = None
-                raise
+                # Bounded retry: if NO audio was delivered yet, retry once with a fresh socket
+                if not delivered_any:
+                    try:
+                        async for chunk in self._stream_single(text):
+                            delivered_any = True
+                            yield chunk
+                    except Exception:
+                        try:
+                            if self.ws:
+                                await self.ws.close()
+                        finally:
+                            self.ws = None
+                        raise
+                else:
+                    raise
 
     async def stream_cached(self, text):
         p = self._path(text)
@@ -187,11 +217,16 @@ class TTS:
                 yield data[i:i + 4096]
             return
         buf = bytearray()
-        async for chunk in self._stream(text):
-            buf += chunk
-            yield chunk
-        if buf:
-            p.write_bytes(bytes(buf))
+        complete_received = False
+        try:
+            async for chunk in self._stream(text):
+                buf += chunk
+                yield chunk
+            complete_received = True
+        finally:
+            # Only write to disk cache if full stream was completed without interruption
+            if complete_received and buf:
+                p.write_bytes(bytes(buf))
 
     async def synth(self, text) -> bytes:
         out = bytearray()

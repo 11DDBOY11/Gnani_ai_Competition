@@ -27,12 +27,12 @@ def stt_headers(c=cfg) -> dict:
     }
 
 
-def tts_request(text: str, c=cfg) -> dict:
+def tts_request(text: str, c=cfg, language="kn-IN") -> dict:
     return {
         "text": text,
         "voice": c.tts_voice,
         "model": c.tts_model,
-        "language": "kn-IN",
+        "language": language,
         "speed": c.tts_speed,
         "audio_config": {"sample_rate": c.sample_rate, "num_channels": 1, "sample_width": 2,
                          "encoding": "linear_pcm", "container": "raw"},
@@ -133,8 +133,10 @@ class TTS:
         self.dir = pathlib.Path(c.cache_dir)
         self.dir.mkdir(parents=True, exist_ok=True)
 
-    def _path(self, text):
+    def _path(self, text, language="kn-IN"):
         k = f"{self.c.tts_model}|{self.c.tts_voice}|{self.c.sample_rate}|{self.c.tts_speed}|{text}"
+        if language != "kn-IN":
+            k = f"{language}|{k}"
         return self.dir / (hashlib.sha1(k.encode("utf-8")).hexdigest() + ".pcm")
 
     async def _ensure(self):
@@ -156,10 +158,10 @@ class TTS:
                     raise RuntimeError("Gnani rejected the API key (HTTP 401). Run python -m scripts.check_key") from None
                 raise
 
-    async def _stream_single(self, text):
+    async def _stream_single(self, text, language="kn-IN"):
         """Execute a single attempt to stream synthesis from Gnani TTS."""
         await self._ensure()
-        await self.ws.send(json.dumps(tts_request(text, self.c)))
+        await self.ws.send(json.dumps(tts_request(text, self.c, language)))
         first = True
         completed = False
         async for raw in self.ws:
@@ -180,11 +182,11 @@ class TTS:
         if not completed:
             raise TTSError("tts socket closed before complete message")
 
-    async def _stream(self, text):
+    async def _stream(self, text, language="kn-IN"):
         async with self.lock:
             delivered_any = False
             try:
-                async for chunk in self._stream_single(text):
+                async for chunk in self._stream_single(text, language):
                     delivered_any = True
                     yield chunk
             except Exception as e:
@@ -196,7 +198,7 @@ class TTS:
                 # Bounded retry: if NO audio was delivered yet, retry once with a fresh socket
                 if not delivered_any:
                     try:
-                        async for chunk in self._stream_single(text):
+                        async for chunk in self._stream_single(text, language):
                             delivered_any = True
                             yield chunk
                     except Exception:
@@ -209,8 +211,8 @@ class TTS:
                 else:
                     raise
 
-    async def stream_cached(self, text):
-        p = self._path(text)
+    async def stream_cached(self, text, language="kn-IN"):
+        p = self._path(text, language)
         if p.exists():
             data = p.read_bytes()
             for i in range(0, len(data), 4096):
@@ -219,7 +221,7 @@ class TTS:
         buf = bytearray()
         complete_received = False
         try:
-            async for chunk in self._stream(text):
+            async for chunk in self._stream(text, language):
                 buf += chunk
                 yield chunk
             complete_received = True
@@ -228,9 +230,9 @@ class TTS:
             if complete_received and buf:
                 p.write_bytes(bytes(buf))
 
-    async def synth(self, text) -> bytes:
+    async def synth(self, text, language="kn-IN") -> bytes:
         out = bytearray()
-        async for c in self.stream_cached(text):
+        async for c in self.stream_cached(text, language):
             out += c
         return bytes(out)
 

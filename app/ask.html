@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="kn">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#eaf2dd">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Krishi Mitra">
+  <link rel="manifest" href="/static/manifest.webmanifest">
+  <link rel="stylesheet" href="/static/farmer.css">
+  <title>ಕೃಷಿ ಮಿತ್ರ | Krishi Mitra</title>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="app-header">
+      <a class="home-link" id="homeLink" href="/?lang=kn" aria-label="Home">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 10.8 12 3.7l8.5 7.1v8.7a1 1 0 0 1-1 1h-5.1v-6.1H9.6v6.1H4.5a1 1 0 0 1-1-1z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M13.8 4.4c.2-1.7 1.3-2.8 3.1-3.1-.1 1.8-1.2 2.9-3.1 3.1Z" fill="currentColor"/></svg>
+        <span data-kn="ಮನೆಗೆ" data-en="Home">ಮನೆಗೆ</span>
+      </a>
+      <a class="brand" id="brandHomeLink" href="/?lang=kn" aria-label="Krishi Mitra home">
+        <svg class="brand-mark" viewBox="0 0 48 48" role="img" aria-label="Krishi Mitra leaf mark">
+          <circle cx="24" cy="24" r="23" fill="#dbe8cb"/>
+          <path d="M24 38V14m0 13c-8 0-12-5-13-13 8 0 13 4 13 13Zm0-5c0-8 5-13 13-14 0 8-4 13-13 14Z" fill="none" stroke="#2f6138" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span class="brand-name"><span>ಕೃಷಿ ಮಿತ್ರ</span><small>KRISHI MITRA</small></span>
+      </a>
+      <div class="language-switch" role="group" aria-label="Language">
+        <button type="button" data-language="kn" aria-pressed="true">ಕನ್ನಡ</button>
+        <button type="button" data-language="en" aria-pressed="false">EN</button>
+      </div>
+    </header>
+
+    <main class="app-main">
+      <section class="app-intro">
+        <h1 data-kn="ನಿಮ್ಮ ಬೆಳೆಯ ಸಮಸ್ಯೆ ಏನು?" data-en="What is happening to your crop?">ನಿಮ್ಮ ಬೆಳೆಯ ಸಮಸ್ಯೆ ಏನು?</h1>
+        <p data-kn="ಮೈಕ್ ಒತ್ತಿ ಮಾತನಾಡಿ ಅಥವಾ ಕೆಳಗೆ ಬರೆಯಿರಿ." data-en="Tap the microphone to speak, or type below.">ಮೈಕ್ ಒತ್ತಿ ಮಾತನಾಡಿ ಅಥವಾ ಕೆಳಗೆ ಬರೆಯಿರಿ.</p>
+      </section>
+
+      <section class="composer" aria-labelledby="questionLabel">
+        <label id="questionLabel" for="questionBox" data-kn="ನಿಮ್ಮ ಕೃಷಿ ಪ್ರಶ್ನೆ" data-en="Your farming question">ನಿಮ್ಮ ಕೃಷಿ ಪ್ರಶ್ನೆ</label>
+        <div class="question-wrap">
+          <textarea id="questionBox" class="question-box" maxlength="1000" autocomplete="off" data-placeholder-kn="ಉದಾಹರಣೆ: ನನ್ನ ಭತ್ತದ ಎಲೆಗಳು ಹಳದಿಯಾಗುತ್ತಿವೆ..." data-placeholder-en="For example: My paddy leaves are turning yellow..." placeholder="ಉದಾಹರಣೆ: ನನ್ನ ಭತ್ತದ ಎಲೆಗಳು ಹಳದಿಯಾಗುತ್ತಿವೆ..."></textarea>
+          <button id="recordButton" class="mic-button" type="button" aria-pressed="false" aria-label="ಮಾತನಾಡಲು ಮೈಕ್ ಒತ್ತಿ">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="2.5" width="6" height="12" rx="3" fill="none" stroke="currentColor" stroke-width="2"/><path d="M5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v3.5m-4 0h8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+        <div class="composer-actions">
+          <button id="askButton" class="button-primary ask-button" type="button" data-kn="ಕೇಳಿ" data-en="Ask">ಕೇಳಿ</button>
+        </div>
+        <p id="statusText" class="ask-status" role="status" aria-live="polite"></p>
+        <p id="offlineNote" class="ask-status offline-note" hidden data-kn="ಇದನ್ನು ಬಳಸಲು ಇಂಟರ್ನೆಟ್ ಸಂಪರ್ಕ ಬೇಕು." data-en="An internet connection is required to use this service.">ಇದನ್ನು ಬಳಸಲು ಇಂಟರ್ನೆಟ್ ಸಂಪರ್ಕ ಬೇಕು.</p>
+      </section>
+
+      <section class="suggestions" aria-labelledby="suggestionTitle">
+        <h2 id="suggestionTitle" data-kn="ಉದಾಹರಣೆ ಪ್ರಶ್ನೆಗಳು" data-en="Example questions">ಉದಾಹರಣೆ ಪ್ರಶ್ನೆಗಳು</h2>
+        <div class="suggestion-list">
+          <button class="suggestion-button" type="button" data-question-kn="ನನ್ನ ಭತ್ತದ ಎಲೆಗಳು ಹಳದಿಯಾಗುತ್ತಿವೆ. ಏನು ಮಾಡಬೇಕು?" data-question-en="My paddy leaves are turning yellow. What should I do?">ನನ್ನ ಭತ್ತದ ಎಲೆಗಳು ಹಳದಿಯಾಗುತ್ತಿವೆ. ಏನು ಮಾಡಬೇಕು?</button>
+          <button class="suggestion-button" type="button" data-question-kn="ನನ್ನ ಅಡಿಕೆ ಕಾಯಿಗಳು ಉದುರುತ್ತಿವೆ. ಏನು ಮಾಡಬೇಕು?" data-question-en="My arecanut nuts are falling. What should I do?">ನನ್ನ ಅಡಿಕೆ ಕಾಯಿಗಳು ಉದುರುತ್ತಿವೆ. ಏನು ಮಾಡಬೇಕು?</button>
+          <button class="suggestion-button" type="button" data-question-kn="ತೆಂಗಿನ ಎಲೆಗಳಲ್ಲಿ ಚುಕ್ಕೆಗಳಿವೆ. ಏನು ಮಾಡಬೇಕು?" data-question-en="There are spots on my coconut leaves. What should I do?">ತೆಂಗಿನ ಎಲೆಗಳಲ್ಲಿ ಚುಕ್ಕೆಗಳಿವೆ. ಏನು ಮಾಡಬೇಕು?</button>
+        </div>
+      </section>
+
+      <section id="answerCard" class="answer-card" aria-labelledby="answerTitle" hidden>
+        <h2 id="answerTitle" data-kn="ಸಲಹೆ" data-en="Guidance">ಸಲಹೆ</h2>
+        <p id="answerText" class="answer-text"></p>
+        <div class="answer-actions">
+          <button id="listenButton" class="button-primary listen-button" type="button" data-kn="ಕೇಳಿ" data-en="Listen">ಕೇಳಿ</button>
+          <button id="stopButton" class="stop-button" type="button" hidden data-kn="ನಿಲ್ಲಿಸಿ" data-en="Stop">ನಿಲ್ಲಿಸಿ</button>
+        </div>
+        <p class="ai-note" data-kn="AI ರಚಿಸಿದ ಸಾಮಾನ್ಯ ಮಾರ್ಗದರ್ಶನ." data-en="AI-generated general guidance.">AI ರಚಿಸಿದ ಸಾಮಾನ್ಯ ಮಾರ್ಗದರ್ಶನ.</p>
+        <p class="expert-note" data-kn="ಇದು ಖಚಿತ ರೋಗನಿರ್ಣಯವಲ್ಲ. ಸಮಸ್ಯೆ ತೀವ್ರವಾಗಿದ್ದರೆ ಸ್ಥಳೀಯ ಕೃಷಿ ಅಧಿಕಾರಿಯನ್ನು ಸಂಪರ್ಕಿಸಿ ಅಥವಾ 1800-180-1551 ಗೆ ಕರೆ ಮಾಡಿ. ಔಷಧ ಬಳಸುವ ಮೊದಲು ಅದರ ಪ್ರಮಾಣ ಮತ್ತು ಕಾಯುವ ಅವಧಿಯನ್ನು ಅಧಿಕಾರಿಯಿಂದ ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ." data-en="This is not a confirmed diagnosis. For severe problems, contact a local agriculture officer or call 1800-180-1551. Confirm product, dose, and waiting period with an officer before using chemicals.">ಇದು ಖಚಿತ ರೋಗನಿರ್ಣಯವಲ್ಲ. ಸಮಸ್ಯೆ ತೀವ್ರವಾಗಿದ್ದರೆ ಸ್ಥಳೀಯ ಕೃಷಿ ಅಧಿಕಾರಿಯನ್ನು ಸಂಪರ್ಕಿಸಿ ಅಥವಾ 1800-180-1551 ಗೆ ಕರೆ ಮಾಡಿ. ಔಷಧ ಬಳಸುವ ಮೊದಲು ಅದರ ಪ್ರಮಾಣ ಮತ್ತು ಕಾಯುವ ಅವಧಿಯನ್ನು ಅಧಿಕಾರಿಯಿಂದ ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ.</p>
+      </section>
+    </main>
+    <footer class="page-footer"><a href="/sim" data-kn="ಡೆವಲಪರ್ ಸಿಮ್ಯುಲೇಟರ್" data-en="Developer simulator">ಡೆವಲಪರ್ ಸಿಮ್ಯುಲೇಟರ್</a></footer>
+  </div>
+
+  <aside id="installInvitation" class="install-invitation" data-pwa-install hidden>
+    <p><strong data-kn="ಫೋನ್‌ಗೆ ಸೇರಿಸಿ" data-en="Add to phone">ಫೋನ್‌ಗೆ ಸೇರಿಸಿ</strong><br><span id="installHelp" data-kn="Chrome ಮೆನು → Add to Home screen" data-en="Chrome menu → Add to Home screen">Chrome ಮೆನು → Add to Home screen</span></p>
+    <div><button id="installButton" type="button" data-kn="ಸೇರಿಸಿ" data-en="Add to phone">ಸೇರಿಸಿ</button><button id="dismissInstall" type="button" aria-label="Dismiss installation invitation" data-kn="ಮುಚ್ಚಿ" data-en="Dismiss">ಮುಚ್ಚಿ</button></div>
+  </aside>
+  <script src="/static/agri-search.js" defer></script>
+  <script src="/static/pwa-install.js" defer></script>
+</body>
+</html>

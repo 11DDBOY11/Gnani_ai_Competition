@@ -1,0 +1,64 @@
+1
+00:00:00,500 --> 00:00:07,000
+When a crop develops a problem, a farmer needs guidance they can understand.
+
+2
+00:00:07,200 --> 00:00:14,000
+Typing long questions or searching English portals creates digital barriers.
+
+3
+00:00:14,200 --> 00:00:17,800
+For Karnataka farmers, speaking in Kannada is far simpler.
+
+4
+00:00:18,200 --> 00:00:26,000
+Meet Krishi Mitra, a Kannada-first agricultural companion for the Gnani AI Challenge.
+
+5
+00:00:26,200 --> 00:00:33,800
+Farmers speak naturally, receive guidance, and listen to answers in their language.
+
+6
+00:00:34,200 --> 00:00:41,000
+A farmer opens the app, chooses Kannada or English, and taps the microphone.
+
+7
+00:00:41,200 --> 00:00:49,000
+Gnani AI converts phone-quality speech into text in real time.
+
+8
+00:00:49,200 --> 00:00:57,500
+The transcript remains visible for the farmer to verify before submitting.
+
+9
+00:00:58,200 --> 00:01:04,800
+Groq generates guidance, and Gnani AI reads it aloud. Listen to this Kannada example.
+
+10
+00:01:05,000 --> 00:01:12,000
+[Gnani AI Kannada Audio]: "ಕೃಷಿ ಮಿತ್ರ: ಭತ್ತದ ಬೆಳೆಯಲ್ಲಿ ಎಲೆ ಸುತ್ತುವ ಹುಳು ಕಂಡುಬಂದರೆ, ಮುನ್ನೆಚ್ಚರಿಕೆ ಕ್ರಮಗಳನ್ನು ಕೈಗೊಳ್ಳಿ."
+(Translation: "If leaf folder caterpillars appear in paddy, take precautionary measures.")
+
+11
+00:01:14,200 --> 00:01:21,000
+Building this voice pipeline revealed crucial engineering lessons.
+
+12
+00:01:21,200 --> 00:01:31,500
+We solved audio cutoffs with client-server acknowledgement and crop-state retention.
+
+13
+00:01:32,200 --> 00:01:40,000
+Safety-first: unreviewed chemicals are suppressed; serious issues refer to 1800-180-1551.
+
+14
+00:01:40,200 --> 00:01:47,800
+Our browser demo is fully operational; telephony integration remains in progress.
+
+15
+00:01:48,200 --> 00:01:54,500
+Krishi Mitra combines voice input, agricultural intelligence, and spoken answers.
+
+16
+00:01:54,700 --> 00:01:59,500
+Built with pride for the Gnani AI Great Indian AI Internship Challenge. Thank you.

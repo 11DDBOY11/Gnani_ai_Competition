@@ -1,0 +1,48 @@
+KRISHI MITRA (ಕೃಷಿ ಮಿತ್ರ) — DEMONSTRATION VIDEO NARRATION SCRIPT
+Target Runtime: Exactly 02:00.00 (120 seconds)
+Built for: Gnani AI Great Indian AI Internship Challenge
+
+Voice Direction:
+Warm, confident, clear Indian-accent English. Natural cadence (~125 words per minute). Pronounce "Krishi Mitra" clearly. Do not speak over the Kannada audio excerpt in Section 4.
+
+============================================================
+00:00–00:18 — SCENE 1: THE PROBLEM & OPPORTUNITY
+============================================================
+"When a crop develops a problem, a farmer needs guidance they can understand immediately. But typing long questions, navigating complicated screens, or searching through English-only portals makes digital tools difficult to use. For Karnataka farmers, speaking in Kannada is far simpler."
+
+============================================================
+00:18–00:34 — SCENE 2: KRISHI MITRA SOLUTION & ARCHITECTURE
+============================================================
+"Meet Krishi Mitra, a Kannada-first agricultural voice companion built for the Gnani AI Great Indian AI Internship Challenge. The goal is simple: let farmers speak naturally, receive clear guidance, and listen to the answer in their preferred language."
+
+============================================================
+00:34–00:58 — SCENE 3: REAL QUESTION INPUT (/ask)
+============================================================
+"Here is the actual application. A farmer opens the app, selects Kannada or English, and taps the microphone. Gnani AI converts phone-quality speech into text in real time. The transcript stays visible, so the farmer can check or edit it before submitting the question."
+
+============================================================
+00:58–01:14 — SCENE 4: REAL KANNADA SPOKEN PLAYBACK
+============================================================
+[00:58–01:05] Narrator:
+"Groq generates general guidance, and Gnani AI reads it aloud. Listen to this actual Kannada example."
+
+[01:05–01:12] Application Audio (Gnani AI Timbre-v3.0 Lakshmi):
+"ಕೃಷಿ ಮಿತ್ರ: ಭತ್ತದ ಬೆಳೆಯಲ್ಲಿ ಎಲೆ ಸುತ್ತುವ ಹುಳು ಕಂಡುಬಂದರೆ, ಮುನ್ನೆಚ್ಚರಿಕೆ ಕ್ರಮಗಳನ್ನು ಕೈಗೊಳ್ಳಿ."
+(Verified Translation: "Krishi Mitra: If leaf folder caterpillars are observed in the paddy crop, take precautionary control measures.")
+
+[01:12–01:14] Brief transition pause.
+
+============================================================
+01:14–01:32 — SCENE 5: ENGINEERING CHALLENGES & PRODUCTION FIXES
+============================================================
+"Building this voice pipeline revealed crucial engineering lessons. We solved halfway audio cutoffs with an explicit client-server playback acknowledgement protocol. We overhauled the dialogue engine so crop state is systematically retained across conversational turns, and we built an accessible web experience alongside the simulator."
+
+============================================================
+01:32–01:48 — SCENE 6: RESPONSIBLE ADVISORY & REALISTIC SCOPE
+============================================================
+"Krishi Mitra is designed with agricultural safety first. Unreviewed chemical dosages are suppressed, and serious problems refer farmers to the government Kisan Call Centre at 1800-180-1551. Our browser demo is fully operational, while telephone integration remains in progress."
+
+============================================================
+01:48–02:00 — SCENE 7: CLOSING & SUBMISSION CREDITS
+============================================================
+"Krishi Mitra brings together voice input, agricultural intelligence, and spoken answers. Built with pride for the Gnani AI Great Indian AI Internship Challenge. Thank you."

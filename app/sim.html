@@ -1,29 +1,37 @@
-﻿<!doctype html><meta charset="utf-8"><title>Krishi Mitra - phone simulator</title>
-<style>
-  body{font-family:system-ui;max-width:640px;margin:2rem auto;padding:0 1rem}
-  button{font-size:1.1rem;padding:.7rem 1.4rem;margin-right:.5rem;cursor:pointer}
-  button:disabled{cursor:not-allowed;opacity:0.6}
-  input[type="password"]{font-size:1rem;padding:.5rem .7rem;margin-right:.5rem;border:1px solid #ccc;border-radius:4px;width:180px}
-  .token-box{margin:1rem 0;padding:.8rem;background:#f9f9f9;border:1px solid #e0e0e0;border-radius:6px}
-  .warn{font-size:.85rem;color:#666;margin-top:.4rem}
-  #log div{padding:.5rem .7rem;margin:.4rem 0;border-radius:6px;word-break:break-word}
-  .f{background:#e8f5e9}
-  .b{background:#e3f2fd}
-  .e{background:#ffebee;color:#c62828;font-weight:500}
-  .info{background:#fff3e0;color:#e65100}
-</style>
-<h2>Krishi Mitra - phone simulator</h2>
-<p>Test only. Sends your microphone audio as 8 kHz phone-quality PCM to the live advisory pipeline. Use headphones to prevent echo.</p>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="manifest" href="/static/manifest.webmanifest">
+  <meta name="theme-color" content="#2e7d32">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Krishi Mitra">
+  <title>Krishi Mitra developer simulator</title>
+  <style>
+    body{font-family:system-ui;max-width:640px;margin:2rem auto;padding:0 1rem;background:#f6f7f3;color:#263b2c}
+    button{font-size:1.1rem;padding:.7rem 1.4rem;margin-right:.5rem;cursor:pointer}
+    button:disabled{cursor:not-allowed;opacity:.6}
+    input[type="password"]{font-size:1rem;padding:.5rem .7rem;margin-right:.5rem;border:1px solid #ccc;border-radius:6px;width:180px}
+    .token-box{margin:1rem 0;padding:.8rem;background:#fff;border:1px solid #ddd;border-radius:8px}
+    .warn{font-size:.85rem;color:#666;margin-top:.4rem}
+    #log div{padding:.5rem .7rem;margin:.4rem 0;border-radius:6px;word-break:break-word}
+    .f{background:#e8f5e9}.b{background:#e3f2fd}.e{background:#ffebee;color:#c62828;font-weight:500}.info{background:#fff3e0;color:#e65100}
+  </style>
+</head>
+<body>
+<main>
+<h1>Developer simulator</h1>
+<p>Test tool for the guided voice advisory pipeline. Sends microphone audio as 8 kHz PCM. Use headphones to prevent echo.</p>
 
 <div class="token-box">
-  <label for="tok">CALL_TOKEN (optional): </label>
+  <label for="tok">Developer CALL_TOKEN (optional): </label>
   <input type="password" id="tok" placeholder="leave blank if none" autocomplete="off">
   <div class="warn">Note: Query-string tokens may be visible in local/infrastructure server access logs. This input is for local testing only and is not persisted or logged.</div>
 </div>
 
 <button id="call">Call</button><button id="hang" disabled>Hang up</button> <span id="st"></span>
 <div id="log"></div>
-
 <script>
 const log=(c,t)=>{const d=document.createElement('div');d.className=c;d.textContent=t;const el=document.getElementById('log');el.append(d);d.scrollIntoView({block:'nearest'})};
 const trace=(event,fields={})=>console.info('[krishi-playback-trace]',JSON.stringify({event,...fields}));
@@ -385,3 +393,6 @@ hangBtn.onclick=()=>{
   }
 };
 </script>
+</main>
+</body>
+</html>

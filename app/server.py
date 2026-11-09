@@ -1,10 +1,12 @@
-import asyncio, base64, hmac, json, logging, pathlib, re, time, uuid
+import asyncio, base64, copy, hmac, io, json, logging, pathlib, re, time, uuid, wave
 from collections import OrderedDict
-from fastapi import FastAPI, WebSocket
-from fastapi.responses import HTMLResponse
+from fastapi import FastAPI, HTTPException, Request, WebSocket
+from fastapi.responses import HTMLResponse, Response
+from fastapi.staticfiles import StaticFiles
+from . import agri_search
 from .config import cfg
 from .dialogue import Session, T
-from .gnani import STTStream, TTS
+from .gnani import STTStream, TTS, transcribe_pcm
 from .calllog import log_call, queue_sms
 
 log = logging.getLogger("krishi")
@@ -33,6 +35,163 @@ def landing():
 @app.get("/sim")
 def sim():
     return HTMLResponse((pathlib.Path(__file__).parent / "sim.html").read_text(encoding="utf-8"))
+
+
+@app.get("/ask")
+def ask_page():
+    return HTMLResponse((pathlib.Path(__file__).parent / "ask.html").read_text(encoding="utf-8"))
+
+
+app.mount("/static", StaticFiles(directory=pathlib.Path(__file__).resolve().parent.parent / "static"),
+          name="static")
+
+
+def _search_request_log(question_length, language, crop, district, status, latency_ms,
+                        needs_expert_review="n/a"):
+    log.info(
+        "agri_search_request question_length=%s language=%s crop=%s district_present=%s "
+        "response_status=%s latency_ms=%s needs_expert_review=%s",
+        question_length, language, crop or "none", bool(district), status, latency_ms,
+        needs_expert_review,
+    )
+
+
+def _answer_request_data(payload):
+    if not isinstance(payload, dict):
+        raise HTTPException(status_code=400, detail="Request body must be a JSON object.")
+    question = payload.get("question")
+    if not isinstance(question, str):
+        raise HTTPException(status_code=400, detail="Please enter an agricultural question.")
+    question = agri_search.sanitize_question(question)
+    if not 5 <= len(question) <= 1000:
+        raise HTTPException(status_code=400, detail="Question must be between 5 and 1000 characters.")
+    language = payload.get("language", "kn")
+    if language not in ("kn", "en"):
+        raise HTTPException(status_code=400, detail="Language must be 'kn' or 'en'.")
+    crop = payload.get("crop")
+    if crop is not None:
+        if not isinstance(crop, str) or crop.strip().lower() not in ("paddy", "arecanut", "coconut", "other"):
+            raise HTTPException(status_code=400, detail="Crop must be paddy, arecanut, coconut, or other.")
+        crop = crop.strip().lower()
+    district = payload.get("district")
+    if district is not None:
+        if not isinstance(district, str) or len(district) > 100:
+            raise HTTPException(status_code=400, detail="District must be text up to 100 characters.")
+        district = agri_search.sanitize_question(district) or None
+    return question, language, crop, district
+
+
+@app.post("/api/agri-search")
+async def api_agri_search(request: Request):
+    started = time.monotonic()
+    question_length, language, crop, district = 0, "kn", None, None
+    status, needs_review = 500, "n/a"
+    try:
+        try:
+            payload = await request.json()
+        except Exception:
+            raise HTTPException(status_code=400, detail="Request body must contain valid JSON.") from None
+        question_length = len(payload.get("question", "")) if isinstance(payload, dict) and isinstance(payload.get("question"), str) else 0
+        question, language, crop, district = _answer_request_data(payload)
+        try:
+            result = await agri_search.generate_agri_answer(question, language, crop, district)
+        except agri_search.GroqKeyMissing:
+            raise HTTPException(status_code=503, detail="Ask Krishi Mitra is unavailable: GROQ_API_KEY is not configured on the server.") from None
+        except agri_search.GroqTimedOut:
+            raise HTTPException(status_code=504, detail="The agricultural answer service timed out. Please try again.") from None
+        except agri_search.GroqRequestFailed:
+            raise HTTPException(status_code=502, detail="The agricultural answer service could not complete the request. Please try again.") from None
+        needs_review = result["needs_expert_review"]
+        status = 200
+        return {**result, "language": language}
+    except HTTPException as exc:
+        status = exc.status_code
+        raise
+    except Exception:
+        status = 500
+        raise HTTPException(status_code=500, detail="An unexpected error occurred while preparing the answer.") from None
+    finally:
+        _search_request_log(question_length, language, crop, district, status,
+                            int((time.monotonic() - started) * 1000), needs_review)
+
+
+@app.post("/api/agri-search/transcribe")
+async def api_agri_search_transcribe(request: Request, language: str = "kn"):
+    started = time.monotonic()
+    status = 500
+    if language not in ("kn", "en"):
+        status = 400
+        _search_request_log(0, language, None, None, status,
+                            int((time.monotonic() - started) * 1000))
+        raise HTTPException(status_code=400, detail="Language must be 'kn' or 'en'.")
+    try:
+        if not cfg.api_key:
+            raise HTTPException(status_code=503, detail="Speech recognition is unavailable: GNANI_API_KEY is not configured on the server.")
+        pcm = await request.body()
+        if len(pcm) < 2 or len(pcm) > 1_000_000 or len(pcm) % 2:
+            raise HTTPException(status_code=400, detail="Recorded audio must be valid 16-bit PCM and no longer than about one minute.")
+        stt_config = copy.copy(cfg)
+        stt_config.stt_language = "kn-IN" if language == "kn" else "en-IN"
+        events = await transcribe_pcm(pcm, c=stt_config)
+        transcripts = [agri_search.sanitize_question(event.get("text", ""))
+                       for event in events if event.get("type") == "transcript"]
+        transcript = next((value for value in reversed(transcripts) if value), "")
+        status = 200
+        return {"transcript": transcript, "language": language}
+    except HTTPException as exc:
+        status = exc.status_code
+        raise
+    except Exception:
+        status = 502
+        raise HTTPException(status_code=502, detail="Speech recognition failed. Please record the question again.") from None
+    finally:
+        _search_request_log(0, language, None, None, status,
+                            int((time.monotonic() - started) * 1000))
+
+
+@app.post("/api/agri-search/speak")
+async def api_agri_search_speak(request: Request):
+    started = time.monotonic()
+    text_length, language, status = 0, "kn", 500
+    try:
+        try:
+            payload = await request.json()
+        except Exception:
+            raise HTTPException(status_code=400, detail="Request body must contain valid JSON.") from None
+        text = payload.get("text") if isinstance(payload, dict) else None
+        if not isinstance(text, str):
+            raise HTTPException(status_code=400, detail="Text is required for speech playback.")
+        text = agri_search.sanitize_question(text)
+        text_length = len(text)
+        language = payload.get("language", "kn")
+        if not text or len(text) > 4000 or language not in ("kn", "en"):
+            raise HTTPException(status_code=400, detail="Text must be 1 to 4000 characters and language must be 'kn' or 'en'.")
+        if not cfg.api_key:
+            raise HTTPException(status_code=503, detail="Speech playback is unavailable: GNANI_API_KEY is not configured on the server.")
+        tts = app.state.tts_factory()
+        pcm = bytearray()
+        async for chunk in tts.stream_cached(text, language="kn-IN" if language == "kn" else "en-IN"):
+            pcm.extend(chunk)
+        if len(pcm) % 2:
+            pcm.pop()
+        wav_buffer = io.BytesIO()
+        with wave.open(wav_buffer, "wb") as wav_file:
+            wav_file.setnchannels(1)
+            wav_file.setsampwidth(2)
+            wav_file.setframerate(cfg.sample_rate)
+            wav_file.writeframes(pcm)
+        status = 200
+        return Response(content=wav_buffer.getvalue(), media_type="audio/wav",
+                        headers={"Cache-Control": "no-store"})
+    except HTTPException as exc:
+        status = exc.status_code
+        raise
+    except Exception:
+        status = 502
+        raise HTTPException(status_code=502, detail="Speech synthesis failed. Please try again.") from None
+    finally:
+        _search_request_log(text_length, language, None, None, status,
+                            int((time.monotonic() - started) * 1000))
 
 
 class Call:

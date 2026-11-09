@@ -1,0 +1,16 @@
+file 'corrected_slides/slide_1.png'
+duration 18.0
+file 'corrected_slides/slide_2.png'
+duration 16.0
+file 'corrected_slides/slide_3.png'
+duration 24.0
+file 'corrected_slides/slide_4.png'
+duration 16.0
+file 'corrected_slides/slide_5.png'
+duration 18.0
+file 'corrected_slides/slide_6.png'
+duration 16.0
+file 'corrected_slides/slide_7.png'
+duration 12.0
+file 'corrected_slides/slide_7.png'
+

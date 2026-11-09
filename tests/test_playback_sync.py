@@ -110,8 +110,8 @@ def test_delayed_final_audio_chunk(monkeypatch, tmp_path):
     """Test that playback ack and server completion wait for delayed final audio chunks."""
     monkeypatch.setattr("app.calllog.cfg.log_dir", str(tmp_path))
     stt = ScriptedSTT()
-    # 2 sentences, 0.05s delay per chunk
-    tts = MockStreamingTTS(chunks_per_sentence=2, chunk_delay=0.05)
+    # Six delayed chunks model the complete greeting response at 0.05s each.
+    tts = MockStreamingTTS(chunks_per_sentence=6, chunk_delay=0.05)
     server.app.state.stt_factory = lambda: stt
     server.app.state.tts_factory = lambda: tts
 

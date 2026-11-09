@@ -867,6 +867,7 @@ class Session:
                 "ask_crop", "ask_problem", "ask_stage", "confirm_disease",
                 "clarify_disease_symptom", "ask_another_problem", "followup_options",
                 "disease_advisory_unavailable", "repeat_clarification",
+                "stage_unrecognized",
             }
             self.pending_question = (
                 (str(r.sentences[-1]) if r.meta.get("state") == "disease_advisory_unavailable"
@@ -1279,7 +1280,21 @@ class Session:
                     self.crop = "coconut"
                     self.asks["crop"] = 0
 
+        if self.problem == "paddy_leaf_folder" and any(k in t for k in ["ಔಷಧ", "ಔಷಧಿ", "ಸಿಂಪಡಿಸ", "ರಾಸಾಯನಿಕ", "chemical", "spray", "pesticide"]):
+            return self.start_leaf_folder_intake()
+
         st = find_stage(t)
+        if (self.pending_question_kind == "stage" and not st
+                and not crop and not prob and not new_issue):
+            # An unrecognized stage answer is a clarification failure, not a
+            # reason to escalate and end the call.
+            retry = "ಕ್ಷಮಿಸಿ, ನಿಮ್ಮ ಮಾತು ಸ್ಪಷ್ಟವಾಗಿ ಅರ್ಥವಾಗಲಿಲ್ಲ. ದಯವಿಟ್ಟು ಬೆಳೆಯ ಹಂತವನ್ನು ಮತ್ತೆ ಹೇಳಿ: ಸಸಿ, ಹೂ ಬಿಡುವ ಹಂತ, ಅಥವಾ ಕಾಳು ಕಟ್ಟುವ ಹಂತ."
+            self.pending_question_kind = "stage"
+            return self._remember(Reply(
+                [retry],
+                meta={"state": "stage_unrecognized", "crop": self.crop,
+                      "problem": self.problem},
+            ))
         if st:
             self.stage = st
             self.asks["stage"] = 0

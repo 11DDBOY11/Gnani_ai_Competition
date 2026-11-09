@@ -1,140 +1,155 @@
-# Krishi Mitra
+# Krishi Mitra (ಕೃಷಿ ಮಿತ್ರ)
 
-Krishi Mitra is a Kannada voice advisory assistant for farmers in Karnataka, built for the **Gnani AI Great Indian AI Internship Challenge**. It helps farmers describe crop problems in Kannada and receive practical, crop-specific guidance through a conversational voice interface.
+**A Kannada-First Voice & Text Agricultural Companion for Karnataka Farmers**  
+*Built for the Gnani AI Great Indian AI Internship Challenge*
 
-The current advisory scope is deliberately limited to three crops:
+---
 
-| Crop | Kannada |
-| --- | --- |
-| Paddy | ಭತ್ತ |
-| Arecanut | ಅಡಿಕೆ |
-| Coconut | ತೆಂಗು |
+## 🌐 Live Application Links
 
-## Live demo
+- **Landing Page (Home):** <https://krishi-mitra-gn3h.onrender.com/>
+- **Ask Krishi Mitra (Web App):** <https://krishi-mitra-gn3h.onrender.com/ask>
+- **Developer Voice Simulator:** <https://krishi-mitra-gn3h.onrender.com/sim>
+- **GitHub Repository:** <https://github.com/11DDBOY11/Gnani_ai_Competition>
 
-**[Open the hosted Krishi Mitra demo](https://krishi-mitra-gn3h.onrender.com/)**
+---
 
-The browser simulator is the recommended way to evaluate the project. It supports Kannada speech through the browser microphone, Gnani AI speech-to-text (STT), crop and problem recognition, advisory lookup, Kannada text-to-speech (TTS), and a turn-based conversation. Unsupported crops receive a referral to the Kisan Call Centre at **1800-180-1551**.
+## 📸 User Interface Showcase
 
-## How it works
+### 1. Farmer-Facing Landing Page (`/`)
+The responsive public landing page introduces Krishi Mitra, provides an instant Kannada/English language toggle, outlines the supported crops and core advisory principles, and directs farmers to the Ask interface.
 
-1. The browser captures the farmer's speech and sends 8 kHz audio to the backend over WebSocket.
-2. The backend streams the audio to Gnani AI STT for Kannada transcription.
-3. The dialogue manager identifies the crop and problem, then looks up a response in the controlled advisory data.
-4. Gnani AI TTS synthesizes the Kannada response.
-5. The browser plays the response and acknowledges completion before accepting the next turn.
+![Krishi Mitra Landing Page](docs/images/landing_page.png)
 
-```text
-Farmer microphone
-       |
-       v
-Browser simulator
-       |
-       v
-FastAPI WebSocket backend on Render
-       |
-       +----> Gnani AI STT
-       |
-       +----> Dialogue manager and advisory data
-       |
-       +----> Gnani AI TTS
-       |
-       v
-Browser audio playback
+---
+
+### 2. Ask Krishi Mitra (`/ask`)
+A voice-first web application where farmers can speak naturally in Kannada or type their agricultural query. Microphone audio is streamed at 8 kHz phone quality to Gnani AI Vachana STT, transcribed in real time, reasoned via Groq LLM, and synthesized into spoken Kannada using Gnani AI Timbre-v3.0.
+
+![Ask Krishi Mitra Web App](docs/images/ask_page.png)
+
+#### Mobile Experience
+The interface is optimized for mobile touchscreens and features one-click sample questions, instant audio playback with Listen/Stop controls, and responsive layout:
+
+<p align="center">
+  <img src="docs/images/ask_page_mobile.png" alt="Ask Krishi Mitra Mobile View" width="380" />
+</p>
+
+---
+
+### 3. Developer Guided Voice Simulator (`/sim`)
+A browser-based phone simulator built to develop and test the core guided conversational pipeline. It simulates 8 kHz phone-quality PCM audio streaming over WebSockets, slot-filling dialogue state retention, and explicit client-server playback acknowledgements (`ack_mode`).
+
+![Developer Guided Simulator](docs/images/sim_page.png)
+
+---
+
+## 🏗️ System Architecture & Workflow
+
+```
+[ Farmer Speaks (Kannada) ]
+          │ (8 kHz Phone-Quality PCM Stream)
+          ▼
+[ Gnani AI Vachana STT ] ──► Real-time Kannada Transcription
+          │
+          ▼
+[ Guided Engine & Groq LLM ] ──► Agronomic Reasoning & Safety Filtering
+          │
+          ▼
+[ Gnani AI Timbre-v3.0 TTS ] ──► Clear Kannada Audio Synthesis (Lakshmi)
+          │
+          ▼
+[ Audio Player / Simulator ] ──► Synchronized Playback with Acknowledgements
 ```
 
-## Technical architecture
+---
 
-- **Backend:** Python and FastAPI, including WebSocket endpoints.
-- **Speech:** Gnani AI STT and TTS; Kannada (`kn-IN`) and 8 kHz PCM are the configured defaults.
-- **Dialogue and recognition:** Rule-based crop and problem matching with conversational state.
-- **Advisory data:** Local JSON knowledge base and disease registry; no vector database is used.
-- **Hosting:** Render web service, described by `render.yaml`.
-- **Browser client:** `app/sim.html`, served at `/sim`; `/` serves the landing page.
+## 🚀 Key Features
 
-## Key engineering work
+1. **Voice-First Accessibility:**
+   - Farmers who cannot spell or type complex Kannada botanical terms can ask questions completely by voice.
+   - Live microphone capture streams 8 kHz phone-quality PCM audio directly to Gnani AI.
 
-- The dialogue flow is Kannada-first and filters crop-specific matching to the supported crops: paddy, arecanut, and coconut. Unsupported crops are handled with a referral rather than being given a mismatched crop advisory.
-- The unsupported-crop flow can send a referral SMS directing the farmer to Kisan Call Centre **1800-180-1551**.
-- Recognition handles selected Kannada word forms and morphology, including paddy leaf-folder phrases such as "ಮಡಚಿಕೊಂಡಿದೆ". Coverage is limited and should not be interpreted as support for every regional phrase.
-- For browser calls, the server synthesizes a complete response, joins its PCM audio into one buffer, and sends one audio payload. The browser uses one `AudioBufferSourceNode` per response, stops the previous source before starting a new one, and sends `playback_done` when playback ends.
-- Microphone intake is suppressed during playback to reduce echo and overlapping turns.
-- STT disconnect diagnostics include `failure_source`, `error_type`, `error_message`, `audio_sent_before_failure`, `browser_websocket_closed`, `client_session_id`, and `response_id`.
+2. **Dual-Mode Demonstration:**
+   - **Ask Web App (`/ask`):** Open-ended agricultural Q&A with real-time transcription, sample query chips, and spoken playback.
+   - **Guided Simulator (`/sim`):** Slot-filling conversational engine focusing on 3 supported crops: **Paddy (ಭತ್ತ)**, **Arecanut (ಅಡಿಕೆ)**, and **Coconut (ತೆಂಗು)**.
 
-### Telephony integration status
+3. **Responsible Advisory & Safety Gates:**
+   - **Non-Diagnostic:** Provides agronomic guidance without claiming to replace in-person pathology inspections.
+   - **Chemical Safety Gate:** Unreviewed chemical trade names and dosages are suppressed from voice synthesis.
+   - **Government Helpline Referral:** Farmers with severe or unknown crop issues are referred to the Government of India Kisan Call Centre at **1800-180-1551**.
 
-An Exotel call flow was configured, and the greeting playback path was demonstrated. The complete end-to-end telephone conversation was **not stabilized before the submission deadline**. The main issue observed was that after the initial greeting, when the caller began describing a problem, the call or WebSocket session disconnected.
+4. **Robust Audio Sequencing:**
+   - Explicit client-server playback acknowledgement (`ack_mode`) prevents audio cutoff.
+   - Browser microphone intake is suppressed while spoken responses are actively playing.
 
-The team investigated likely causes, including WebSocket keepalive and timeout behavior, protocol mismatch between Exotel media events and the browser-oriented WebSocket handler, event-loop blocking during synthesis, and audio streaming synchronization. An Exotel adapter is present in the project, but the full telephone conversation was not proven reliable.
+---
 
-Exotel production activation also requires telecom KYC verification. As an individual/student developer without a registered business, full production KYC could not be completed within the competition window. The submitted demonstration therefore uses the browser voice simulator on Render; Exotel remains a configured future production interface. **Exotel is not claimed to be fully working or production-ready.**
+## 🛣️ Routes
 
-### Challenges and engineering decisions
+| Route | Purpose |
+| :--- | :--- |
+| `/` | Farmer-facing landing page |
+| `/ask` | Farmer question-and-answer voice & text web app |
+| `/sim` | Developer guided voice simulator |
+| `/health` | Health check endpoint |
+| `/api/agri-search` | Submit typed or transcribed agricultural questions |
+| `/api/agri-search/transcribe` | Transcribe captured microphone audio via Gnani AI |
+| `/api/agri-search/speak` | Synthesize answer audio for Listen playback via Gnani AI |
+| `/ws/call` | Guided simulator WebSocket connection |
 
-1. **Audio sentence interleaving:** Earlier versions synthesized and streamed response sentences independently. Cached or faster sentences could arrive out of order and overlap audio from previous turns. The server was changed to synthesize the full response first, concatenate its PCM audio, and send one payload per turn.
-2. **Cross-turn audio leakage:** Browser audio sources from earlier responses were not always stopped before a new response began. The browser now stops and disconnects active `AudioBufferSourceNode`s before starting the next response.
-3. **STT disconnects:** The system observed WebSocket disconnects with code 1011 and keepalive ping timeouts. Diagnostics were added to help distinguish browser-side closure, upstream STT failure, and whether audio had been sent.
-4. **Exotel integration:** The greeting path worked, but the full caller-to-advisory loop disconnected after the greeting. Likely contributors included Exotel's JSON media event protocol, WebSocket keepalive behavior, and the browser-oriented handler expecting a different audio format. The browser demo was prioritized over presenting an unstable telephone demo.
-5. **KYC constraint:** Full Exotel production activation requires KYC verification. The required business KYC could not be completed by the individual developer during the competition period, so the hosted browser simulator is the primary demonstration.
+---
 
-## Run locally
+## 💻 Local Setup
 
-These commands use Windows PowerShell:
+In Windows PowerShell, from the repository root:
 
 ```powershell
 python -m venv .venv
-.venv\Scripts\activate
-pip install -r requirements.txt
-uvicorn app.server:app --reload --port 8000
+.venv\Scripts\Activate.ps1
+python -m pip install -r requirements.txt
+Copy-Item .env.example .env
 ```
 
-Configure the required API credentials through environment variables or a local `.env` file. See `.env.example` for the variable names; do not commit real credentials. Then open:
+Configure your credentials in `.env`:
 
-- Landing page: <http://localhost:8000/>
-- Browser simulator: <http://localhost:8000/sim>
-
-## Repository structure
-
-```text
-app/
-  server.py       FastAPI routes, WebSocket call orchestration, and Exotel adapter
-  dialogue.py     Dialogue state, crop/problem recognition, and response selection
-  diseases.py     Disease registry, aliases, and matching
-  kb.json         Crop-specific advisory knowledge
-  gnani.py        Gnani AI STT and TTS clients
-  config.py       Environment-based configuration
-  calllog.py      Call logging and SMS queue support
-  sim.html        Browser voice simulator
-output/
-  krishi-mitra-landing.html  Hosted landing page
-tests/            Automated unit and integration tests
-scripts/          Local smoke checks, audio preparation, and evaluation utilities
-render.yaml       Render deployment configuration
-requirements.txt  Python dependencies
-.env.example     Example environment variable names
+```dotenv
+GNANI_API_KEY=your_gnani_api_key
+GROQ_API_KEY=your_groq_api_key
+GROQ_MODEL=openai/gpt-oss-120b
 ```
 
-## Testing
+> **Security Note:** Keep `.env` private and never commit credentials, tokens, or recordings to version control.
 
-The repository includes automated tests for crop recognition and filtering, unsupported-crop handling, dialogue state transitions, advisory retrieval, atomic audio delivery, playback acknowledgement, and the Exotel protocol adapter. Run them locally with:
+Start the application server:
+
+```powershell
+python -m uvicorn app.server:app --reload --port 8000
+```
+
+Open in your browser:
+- Landing Page: <http://localhost:8000/>
+- Ask App: <http://localhost:8000/ask>
+- Developer Simulator: <http://localhost:8000/sim>
+
+---
+
+## 🧪 Testing
+
+Run the automated test suite:
 
 ```powershell
 pytest -q
 ```
 
-No passing test count is stated here; results depend on the current checkout and environment.
+Or run focused test modules:
 
-## Future work
+```powershell
+pytest tests/test_landing_routes.py tests/test_agri_search.py tests/test_playback_sync.py -q
+```
 
-- Stabilize and validate Exotel Voicebot protocol handling for JSON media events and base64 PCM.
-- Improve WebSocket keepalive and connection recovery for telephony.
-- Expand crop and disease coverage only after validation with agricultural experts.
-- Improve Kannada speech recognition for regional accents and noisy farm environments.
-- Add farmer feedback capture and advisory-quality tracking.
-- Add language support beyond Kannada.
+---
 
-## Competition submission
+## 🏆 Gnani AI Internship Challenge
 
-Krishi Mitra was built for the **Gnani AI Great Indian AI Internship Challenge**.
-
-A public social post should include a short project description, the [live demo](https://krishi-mitra-gn3h.onrender.com/), the tags **#GreatIndianAIInternshipChallenge #GnaniAI**, and a mention/tag of Gnani AI where platform rules allow.
+Krishi Mitra was designed and built for the **Gnani AI Great Indian AI Internship Challenge**.

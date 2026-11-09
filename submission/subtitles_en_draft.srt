@@ -1,0 +1,75 @@
+1
+00:00:00,500 --> 00:00:06,500
+When a crop develops a problem, a farmer needs guidance they can understand.
+
+2
+00:00:06,500 --> 00:00:15,300
+But typing long questions, navigating complicated screens, or searching through
+English-only information can make digital tools difficult to use.
+
+3
+00:00:15,300 --> 00:00:18,000
+For many farmers, speaking feels simpler.
+
+4
+00:00:18,000 --> 00:00:21,500
+Meet Krishi Mitra, a Kannada-first agricultural voice assistant.
+
+5
+00:00:21,500 --> 00:00:31,500
+The goal is simple: let farmers ask naturally, receive clear general guidance,
+and listen to the answer in their preferred language.
+
+6
+00:00:31,500 --> 00:00:34,000
+It is a mobile-friendly web app, not a native phone app.
+
+7
+00:00:34,000 --> 00:00:43,000
+Here is the actual application. A farmer opens the app, selects Kannada or English,
+and taps the microphone.
+
+8
+00:00:43,000 --> 00:00:54,000
+Gnani AI converts speech into text. The transcript stays visible, so the farmer
+can check or edit it before submitting the question.
+
+9
+00:00:58,000 --> 00:01:05,000
+Groq generates general guidance, and Gnani AI reads it aloud.
+Listen to this Kannada example.
+
+10
+00:01:05,000 --> 00:01:11,000
+[EDITING PLACEHOLDER: INSERT VERIFIED ENGLISH TRANSLATION OF THE ACTUAL KANNADA APP AUDIO.]
+
+11
+00:01:14,000 --> 00:01:20,700
+The interface is simple: one question box, a microphone, and Listen.
+
+12
+00:01:20,700 --> 00:01:25,000
+Example questions fill the box without submitting.
+
+13
+00:01:25,000 --> 00:01:32,000
+PWA support offers an app-like web experience. A separate guided mode focuses on
+paddy, arecanut, and coconut.
+
+14
+00:01:32,000 --> 00:01:36,500
+Krishi Mitra provides general guidance, not a confirmed diagnosis.
+
+15
+00:01:36,500 --> 00:01:48,000
+Unclear or serious problems should be checked with a local agriculture officer.
+The browser app is our demonstration; telephone integration remains incomplete.
+
+16
+00:01:48,000 --> 00:01:54,200
+Krishi Mitra brings together voice input, agricultural assistance, and spoken answers,
+making digital guidance easier to access.
+
+17
+00:01:54,200 --> 00:02:00,000
+Built for the Gnani AI Great Indian AI Internship Challenge.

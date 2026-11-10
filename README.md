@@ -5,6 +5,10 @@
 
 ---
 
+> **Read the one-page solution pitch: [SOLUTION_PITCH.md](SOLUTION_PITCH.md)**
+
+---
+
 ## 🌐 Live Application Links
 
 - **Landing Page (Home):** <https://krishi-mitra-gn3h.onrender.com/>

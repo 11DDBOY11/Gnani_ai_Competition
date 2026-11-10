@@ -20,6 +20,38 @@
   let audio = null;
   let audioUrl = null;
 
+  function renderSources(sources) {
+    const card = $('sourcesCard');
+    const list = $('sourcesList');
+    if (!card || !list) return;
+    list.innerHTML = '';
+    if (!Array.isArray(sources) || sources.length === 0) {
+      card.hidden = true;
+      return;
+    }
+    sources.forEach(src => {
+      const li = document.createElement('li');
+      if (src.url) {
+        const a = document.createElement('a');
+        a.href = src.url;
+        a.target = '_blank';
+        a.rel = 'noopener noreferrer';
+        a.textContent = src.title || src.source_id;
+        li.appendChild(a);
+      } else {
+        li.textContent = src.title || src.source_id;
+      }
+      if (src.publisher) {
+        const pub = document.createElement('span');
+        pub.className = 'source-publisher';
+        pub.textContent = ` — ${src.publisher}`;
+        li.appendChild(pub);
+      }
+      list.appendChild(li);
+    });
+    card.hidden = false;
+  }
+
   function readLanguage() {
     try { return localStorage.getItem('krishi-language') === 'en' ? 'en' : 'kn'; }
     catch (error) { return 'kn'; }
@@ -213,6 +245,7 @@
     askButton.disabled = true;
     recordButton.disabled = true;
     answerCard.hidden = true;
+    renderSources([]);
     setStatus('ಮಾರ್ಗದರ್ಶನ ಸಿದ್ಧಪಡಿಸುತ್ತಿದ್ದೇನೆ…', 'Preparing guidance…');
     try {
       const response = await fetch('/api/agri-search', {
@@ -225,6 +258,7 @@
       if (!viewActive || currentGeneration !== generation || controller.signal.aborted) return;
       if (!response.ok) throw new Error('answer');
       answerText.textContent = data.answer;
+      renderSources(data.sources);
       answerCard.hidden = false;
       setStatus('ಉತ್ತರ ಸಿದ್ಧವಾಗಿದೆ.', 'Guidance is ready.');
     } catch (error) {
@@ -258,6 +292,7 @@
       cancelPending();
       language = next;
       answerCard.hidden = true;
+      renderSources([]);
       setStatus('','');
       applyLanguage();
     });

@@ -1,0 +1,480 @@
+{
+  "$schema": "krishi_mitra_solution_hub_v1",
+  "metadata": {
+    "title": "Krishi Mitra Solution Hub Knowledge Base",
+    "version": "1.2.0",
+    "status": "local_preview",
+    "disclaimer": "Server-assembled guidance from eligible stored actions; selection and context still require validation.",
+    "last_audited": "2026-11-10",
+    "auditor": "Antigravity Engineering Audit",
+    "chemical_output_enabled": false,
+    "biological_formulations_enabled": false
+  },
+  "sources": [
+    {
+      "source_id": "SRC-DPPQS-BLAST-2022",
+      "publisher": "Directorate of Plant Protection, Quarantine & Storage (DPPQ&S), Department of Agriculture & Farmers Welfare, Ministry of Agriculture & Farmers Welfare, Government of India",
+      "title": "Advisory on blast disease (Magnaporthe oryzae) on rice crop",
+      "file_reference": "F.No 3-6/2022-23/IPM/Advisory",
+      "publication_date": "2022-07-22",
+      "retrieval_date": "2026-11-10",
+      "url": "https://ppqs.gov.in/sites/default/files/rice_blast_advisory.pdf",
+      "local_file": "data/solution_hub/raw_sources/rice_blast_advisory.pdf",
+      "file_size_bytes": 408772,
+      "sha256": "0d344c5fb6233e7baadba546d92e76a3de0819336d77383d028161fcaf81dec7",
+      "source_verified": true,
+      "verification_method": "Direct HTTP download and SHA256 checksum calculation"
+    },
+    {
+      "source_id": "SRC-DPPQS-LEAF-FOLDER-2023",
+      "publisher": "Directorate of Plant Protection, Quarantine & Storage (DPPQ&S), Department of Agriculture & Farmers Welfare, Ministry of Agriculture & Farmers Welfare, Government of India",
+      "title": "Advisory for management of Rice leaf folder (Cnaphalocrocis medinalis) on rice crop",
+      "file_reference": "Advisory dated 25.09.2023",
+      "publication_date": "2023-09-25",
+      "retrieval_date": "2026-11-10",
+      "url": "https://ppqs.gov.in/sites/default/files/rice_leaf_folder_advisory.pdf",
+      "local_file": "data/solution_hub/raw_sources/rice_leaf_folder_advisory.pdf",
+      "file_size_bytes": 5640780,
+      "sha256": "cc91d3f8119158c83a675fe693b981165a4bf59883db81c5921aebe1c9411f2b",
+      "source_verified": true,
+      "verification_method": "Direct HTTP download and SHA256 checksum calculation"
+    },
+    {
+      "source_id": "SRC-CDB-BUDROT-UNVERIFIED",
+      "publisher": "Coconut Development Board (CDB)",
+      "title": "Unverified reference to Coconut Bud Rot guidelines",
+      "publication_date": null,
+      "retrieval_date": null,
+      "url": null,
+      "local_file": null,
+      "file_size_bytes": null,
+      "sha256": null,
+      "source_verified": false,
+      "exclusion_reason": "No primary source document directly downloaded or cryptographically verified. Excluded from retrieval."
+    },
+    {
+      "source_id": "SRC-CPCRI-KOLEROGA-UNVERIFIED",
+      "publisher": "ICAR-Central Plantation Crops Research Institute (CPCRI)",
+      "title": "Unverified reference to Arecanut Koleroga extension pamphlet",
+      "publication_date": null,
+      "retrieval_date": null,
+      "url": null,
+      "local_file": null,
+      "file_size_bytes": null,
+      "sha256": null,
+      "source_verified": false,
+      "exclusion_reason": "No primary source document directly downloaded or cryptographically verified. Excluded from retrieval."
+    }
+  ],
+  "records": [
+    {
+      "record_id": "REC-PADDY-BLAST-01",
+      "crop_id": "paddy",
+      "crop_names": {
+        "en": "Paddy / Rice",
+        "kn": "ಭತ್ತ"
+      },
+      "candidate_issue": "rice_blast",
+      "issue_type": "candidate_disease",
+      "scientific_name": "Magnaporthe oryzae",
+      "source_verified": true,
+      "eligibility_for_candidate_inspection": true,
+      "symptom_criteria": [
+        "Spindle-shaped or diamond-shaped lesions on leaves with greyish/white centers and dark brown borders",
+        "Dark brown or blackish lesions on stem nodes or panicle neck (neck blast)"
+      ],
+      "confusable_conditions": [
+        "Nitrogen deficiency (causes general uniform yellowing of lower leaves, no diamond lesions)",
+        "Brown spot (Cochliobolus miyabeanus - circular/oval dark spots without white spindle center)",
+        "Water stress or drought leaf tip scorch"
+      ],
+      "clarification_questions": [
+        "Are the leaf lesions spindle-shaped or diamond-shaped with a grey center and brown border, or is there uniform yellowing?",
+        "Are dark brown or black lesions visible at the nodes or at the base of the panicle neck?"
+      ],
+      "supported_actions": [
+        {
+          "action_id": "ACT-BLAST-SANITATION-01",
+          "action_type": "cultural_sanitation",
+          "raw_extracted_text": "Keep the field clean, remove infected seeds, panicles, and plant debris after harvest.",
+          "supporting_excerpt": "Keep the field clean, remove infected seeds, panicles, and plant debris after harvest.",
+          "display_text": "Keep the field clean by removing infected seeds, panicles, and plant debris after harvest.",
+          "source_id": "SRC-DPPQS-BLAST-2022",
+          "page_section": "Page 1, Item 1",
+          "candidate_inspection_eligible": true,
+          "public_release_approved": false,
+          "agronomy_review_status": "unreviewed",
+          "agronomy_reviewer": null,
+          "agronomy_review_date": null,
+          "kannada_review_status": "unreviewed",
+          "kannada_reviewer": null,
+          "kannada_review_date": null,
+          "kannada_display_text": null,
+          "context_sensitive": false
+        },
+        {
+          "action_id": "ACT-BLAST-ROTATION-02",
+          "action_type": "cultural_rotation",
+          "raw_extracted_text": "Crop rotation with non host crops, it provides a mechanism that separates viable spores in crop residue from the newly emerging seedlings",
+          "supporting_excerpt": "Crop rotation with non host crops, it provides a mechanism that separates viable spores in crop residue from the newly emerging seedlings",
+          "display_text": "Rotate rice with non-host crops to help separate viable fungal spores in crop residue from newly emerging seedlings.",
+          "source_id": "SRC-DPPQS-BLAST-2022",
+          "page_section": "Page 1, Item 2",
+          "candidate_inspection_eligible": true,
+          "public_release_approved": false,
+          "agronomy_review_status": "unreviewed",
+          "agronomy_reviewer": null,
+          "agronomy_review_date": null,
+          "kannada_review_status": "unreviewed",
+          "kannada_reviewer": null,
+          "kannada_review_date": null,
+          "kannada_display_text": null,
+          "context_sensitive": false
+        },
+        {
+          "action_id": "ACT-BLAST-SEED-03",
+          "action_type": "preventive_seed_quality",
+          "raw_extracted_text": "Use high quality disease free certified seeds. Infected seeds may serve as inoculum forfurther spread and development.",
+          "supporting_excerpt": "Use high quality disease free certified seeds. Infected seeds may serve as inoculum for further spread and development.",
+          "display_text": "Use high-quality, disease-free certified seeds to prevent introducing primary fungal inoculum.",
+          "source_id": "SRC-DPPQS-BLAST-2022",
+          "page_section": "Page 1, Item 3",
+          "candidate_inspection_eligible": true,
+          "public_release_approved": false,
+          "agronomy_review_status": "unreviewed",
+          "agronomy_reviewer": null,
+          "agronomy_review_date": null,
+          "kannada_review_status": "unreviewed",
+          "kannada_reviewer": null,
+          "kannada_review_date": null,
+          "kannada_display_text": null,
+          "context_sensitive": false
+        },
+        {
+          "action_id": "ACT-BLAST-WATER-04",
+          "action_type": "water_management",
+          "raw_extracted_text": "Maintaining a proper water level for the paddy to grow. Rice blast is known to be more severe in fields or parts of fields in which the water in paddy falls below recommended levels.",
+          "supporting_excerpt": "Maintaining a proper water level for the paddy to grow. Rice blast is known to be more severe in fields or parts of fields in which the water in paddy falls below recommended levels.",
+          "display_text": "Maintain recommended water levels in the paddy field; the advisory notes blast is more severe when field water falls below recommended levels.",
+          "source_id": "SRC-DPPQS-BLAST-2022",
+          "page_section": "Page 1, Item 7",
+          "candidate_inspection_eligible": true,
+          "public_release_approved": false,
+          "agronomy_review_status": "unreviewed",
+          "agronomy_reviewer": null,
+          "agronomy_review_date": null,
+          "kannada_review_status": "unreviewed",
+          "kannada_reviewer": null,
+          "kannada_review_date": null,
+          "kannada_display_text": null,
+          "context_sensitive": false
+        },
+        {
+          "action_id": "ACT-BLAST-CONDITIONS-05",
+          "action_type": "predisposing_conditions_monitoring",
+          "raw_extracted_text": "Rice blast is favored by low temperatures (22-280C1, high relative humidity (>95%), dew deposits, leaf wetness for more than 10 hours, application ofhigh nitrogen and aerobic soils.",
+          "supporting_excerpt": "Rice blast is favored by low temperatures (22-28°C), high relative humidity (>95%), dew deposits, leaf wetness for more than 10 hours, application of high nitrogen and aerobic soils.",
+          "display_text": "The advisory notes that rice blast development is favored by high nitrogen application and aerobic soils, as well as cool temperatures (22–28°C), high humidity (>95%), and leaf wetness exceeding 10 hours.",
+          "source_id": "SRC-DPPQS-BLAST-2022",
+          "page_section": "Page 1, Paragraph 2",
+          "candidate_inspection_eligible": true,
+          "public_release_approved": false,
+          "agronomy_review_status": "unreviewed",
+          "agronomy_reviewer": null,
+          "agronomy_review_date": null,
+          "kannada_review_status": "unreviewed",
+          "kannada_reviewer": null,
+          "kannada_review_date": null,
+          "kannada_display_text": null,
+          "context_sensitive": true,
+          "note": "Reports predisposing conditions rather than an active fertilizer prescription. Held pending agronomy review."
+        },
+        {
+          "action_id": "ACT-BLAST-DISPOSAL-06",
+          "action_type": "phytosanitation_burning",
+          "raw_extracted_text": "Removal and destruction (burn) of diseased plant parts",
+          "supporting_excerpt": "Removal and destruction (burn) of diseased plant parts",
+          "display_text": "Removal and destruction (burning) of diseased plant parts.",
+          "source_id": "SRC-DPPQS-BLAST-2022",
+          "page_section": "Page 1, Item 6",
+          "candidate_inspection_eligible": false,
+          "public_release_approved": false,
+          "agronomy_review_status": "pending_expert_review",
+          "agronomy_reviewer": null,
+          "agronomy_review_date": null,
+          "kannada_review_status": "unreviewed",
+          "kannada_reviewer": null,
+          "kannada_review_date": null,
+          "kannada_display_text": null,
+          "context_sensitive": true,
+          "note": "Field burning carries fire and environmental hazards. Action held pending explicit agronomy safety review."
+        },
+        {
+          "action_id": "ACT-BLAST-BIOCONTROL-07",
+          "action_type": "microbial_biocontrol",
+          "raw_extracted_text": "Treat the seeds with Pseudomonas fluorescence 0.5%o WP [...] Dip the seedlings in with Pseudomonas fluorescence Sgllit of water for 20 minutes before transplanting [...] Foliar spray with Pseudomonas fluorescence [...] 5gllit of water @ Ikglha at an interval of 15-20 days after transplanting [...]",
+          "supporting_excerpt": "Treat the seeds with Pseudomonas fluorescence [...] Dip the seedlings [...] Foliar spray with Pseudomonas fluorescence [...]",
+          "display_text": "Application of Pseudomonas fluorescens biocontrol formulations.",
+          "source_id": "SRC-DPPQS-BLAST-2022",
+          "page_section": "Page 1-2, Items 4, 5, and Page 2 paragraph 1",
+          "candidate_inspection_eligible": false,
+          "public_release_approved": false,
+          "agronomy_review_status": "pending_expert_review",
+          "agronomy_reviewer": null,
+          "agronomy_review_date": null,
+          "kannada_review_status": "unreviewed",
+          "kannada_reviewer": null,
+          "kannada_review_date": null,
+          "kannada_display_text": null,
+          "context_sensitive": true,
+          "note": "Specific biological strain formulations and concentrations require verification against commercial availability and state recommendations. Kept disabled from public output pending expert review."
+        }
+      ],
+      "referral_triggers": [
+        "Infection observed at neck stage (neck blast), causing panicle breakage or severe empty grains.",
+        "Rapid disease spread during continuous cool, humid, or misty weather.",
+        "Farmer asking for fungicide spray names, rates, or application schedules."
+      ]
+    },
+    {
+      "record_id": "REC-PADDY-LEAF-FOLDER-02",
+      "crop_id": "paddy",
+      "crop_names": {
+        "en": "Paddy / Rice",
+        "kn": "ಭತ್ತ"
+      },
+      "candidate_issue": "rice_leaf_folder",
+      "issue_type": "candidate_pest",
+      "scientific_name": "Cnaphalocrocis medinalis",
+      "source_verified": true,
+      "eligibility_for_candidate_inspection": true,
+      "symptom_criteria": [
+        "Leaves longitudinally folded and fastened together with silk webbing",
+        "Green chlorophyll scraped away inside the fold, creating white transparent parallel streaks",
+        "Presence of active green caterpillar or brownish excreta inside folded blades"
+      ],
+      "confusable_conditions": [
+        "Stem borer (causes central dead heart or whitehead, not folded leaf blades)",
+        "Grasshopper feeding (causes irregular edge chewing, no silk threads)",
+        "Mechanical wind fraying of leaf tips"
+      ],
+      "clarification_questions": [
+        "Are the leaf blades folded lengthwise with white transparent streaks and a caterpillar inside?",
+        "Is the damage localized to shaded areas or widespread across the field?"
+      ],
+      "supported_actions": [
+        {
+          "action_id": "ACT-FOLDER-NITROGEN-01",
+          "action_type": "nutrient_management",
+          "raw_extracted_text": "1. Low usage of nitrogenous fertilizers decreases lgftf damage. Highly fertilized plots seem to attract females for oviposition. Theref-ot€, it is advisable to avoid over-fertilization.",
+          "supporting_excerpt": "Low usage of nitrogenous fertilizers decreases leaf damage. Highly fertilized plots seem to attract females for oviposition. Therefore, it is advisable to avoid over-fertilization.",
+          "display_text": "Avoid over-fertilization with nitrogen; the advisory notes that lower nitrogen usage decreases leaf damage because heavily fertilized plots attract female moths for egg laying.",
+          "source_id": "SRC-DPPQS-LEAF-FOLDER-2023",
+          "page_section": "Page 1, Item 1",
+          "candidate_inspection_eligible": true,
+          "public_release_approved": false,
+          "agronomy_review_status": "unreviewed",
+          "agronomy_reviewer": null,
+          "agronomy_review_date": null,
+          "kannada_review_status": "unreviewed",
+          "kannada_reviewer": null,
+          "kannada_review_date": null,
+          "kannada_display_text": null,
+          "context_sensitive": false
+        },
+        {
+          "action_id": "ACT-FOLDER-WEEDING-02",
+          "action_type": "cultural_sanitation",
+          "raw_extracted_text": "6. Remove grassy weeds from fields and borders.",
+          "supporting_excerpt": "Remove grassy weeds from fields and borders.",
+          "display_text": "Remove grassy weed hosts inside the rice field and on immediate bund borders that harbor leaf folder caterpillars.",
+          "source_id": "SRC-DPPQS-LEAF-FOLDER-2023",
+          "page_section": "Page 1, Item 6",
+          "candidate_inspection_eligible": true,
+          "public_release_approved": false,
+          "agronomy_review_status": "unreviewed",
+          "agronomy_reviewer": null,
+          "agronomy_review_date": null,
+          "kannada_review_status": "unreviewed",
+          "kannada_reviewer": null,
+          "kannada_review_date": null,
+          "kannada_display_text": null,
+          "context_sensitive": true,
+          "note": "Relates to immediate field and bund weed hosts. Distinct from surrounding natural predator habitats."
+        },
+        {
+          "action_id": "ACT-FOLDER-ROTATION-03",
+          "action_type": "cultural_post_harvest",
+          "raw_extracted_text": "7. Flood and plough field after harvesting if possible. 8. Rotate rice with a diffsrent crop, or have a fallow period. 9. Avoid ratooning",
+          "supporting_excerpt": "Flood and plough field after harvesting if possible. Rotate rice with a different crop, or have a fallow period. Avoid ratooning.",
+          "display_text": "Post-harvest cultural practices: flood and plough the field after harvest if possible; rotate rice with a different non-host crop or observe a fallow period; avoid ratooning.",
+          "source_id": "SRC-DPPQS-LEAF-FOLDER-2023",
+          "page_section": "Page 1, Items 7, 8, 9",
+          "candidate_inspection_eligible": true,
+          "public_release_approved": false,
+          "agronomy_review_status": "unreviewed",
+          "agronomy_reviewer": null,
+          "agronomy_review_date": null,
+          "kannada_review_status": "unreviewed",
+          "kannada_reviewer": null,
+          "kannada_review_date": null,
+          "kannada_display_text": null,
+          "context_sensitive": false
+        },
+        {
+          "action_id": "ACT-FOLDER-SHADE-04",
+          "action_type": "cultural_canopy",
+          "raw_extracted_text": "3. Higher damages will occur in shaded areas. Therefore, remove the causes of shading within the fielC.",
+          "supporting_excerpt": "Higher damages will occur in shaded areas. Therefore, remove the causes of shading within the field.",
+          "display_text": "Address localized excessive shading within the field where feasible, as higher leaf folder damage occurs in shaded areas.",
+          "source_id": "SRC-DPPQS-LEAF-FOLDER-2023",
+          "page_section": "Page 1, Item 3",
+          "candidate_inspection_eligible": false,
+          "public_release_approved": false,
+          "agronomy_review_status": "pending_expert_review",
+          "agronomy_reviewer": null,
+          "agronomy_review_date": null,
+          "kannada_review_status": "unreviewed",
+          "kannada_reviewer": null,
+          "kannada_review_date": null,
+          "kannada_display_text": null,
+          "context_sensitive": true,
+          "note": "Held pending agronomy review to prevent indiscriminate cutting of trees or beneficial border canopy."
+        },
+        {
+          "action_id": "ACT-FOLDER-PREDATORS-05",
+          "action_type": "biological_conservation",
+          "raw_extracted_text": "2. Egg predators (crickets) inhabit surrounding grass habitats and move to the field at night for predation. Maintenance of non-rice habitats. [...] 10. Encor:lrage predators such as spider, parasitic wasps, predatory beetles, frogs and dragon fly.",
+          "supporting_excerpt": "Egg predators (crickets) inhabit surrounding grass habitats and move to the field at night for predation. Maintenance of non-rice habitats. [...] Encourage predators such as spider, parasitic wasps, predatory beetles, frogs and dragon fly.",
+          "display_text": "Conserve natural predators (spiders, parasitic wasps, predatory beetles, frogs, dragonflies); the advisory notes egg-predating crickets inhabit non-rice grass habitats and move to fields at night.",
+          "source_id": "SRC-DPPQS-LEAF-FOLDER-2023",
+          "page_section": "Page 1, Items 2, 10",
+          "candidate_inspection_eligible": false,
+          "public_release_approved": false,
+          "agronomy_review_status": "pending_expert_review",
+          "agronomy_reviewer": null,
+          "agronomy_review_date": null,
+          "kannada_review_status": "unreviewed",
+          "kannada_reviewer": null,
+          "kannada_review_date": null,
+          "kannada_display_text": null,
+          "context_sensitive": true,
+          "note": "Ecological balance of non-rice surrounding habitat requires agronomic context; held pending expert review."
+        },
+        {
+          "action_id": "ACT-FOLDER-ROPE-06",
+          "action_type": "mechanical_dislodging",
+          "raw_extracted_text": "Use of coir rope in rice crop for dislodging leaf folder larvae etc. on to kerosinized water (1 L of kerosene mixed on 25kg soil and broadcast in tha).",
+          "supporting_excerpt": "Use of coir rope in rice crop for dislodging leaf folder larvae [...]",
+          "display_text": "Passing a coir rope across the crop canopy to dislodge larvae.",
+          "source_id": "SRC-DPPQS-LEAF-FOLDER-2023",
+          "page_section": "Page 1, Item 5",
+          "candidate_inspection_eligible": false,
+          "public_release_approved": false,
+          "agronomy_review_status": "pending_expert_review",
+          "agronomy_reviewer": null,
+          "agronomy_review_date": null,
+          "kannada_review_status": "unreviewed",
+          "kannada_reviewer": null,
+          "kannada_review_date": null,
+          "kannada_display_text": null,
+          "context_sensitive": true,
+          "note": "Broadcasting kerosene carries environmental and crop toxicity risks and is suppressed. Mechanical rope passing alone is held pending agronomy review."
+        }
+      ],
+      "referral_triggers": [
+        "Leaf damage exceeds 10% on productive tillers with live larvae present.",
+        "Extensive moth emergence observed during tillering or panicle initiation.",
+        "Farmer requesting synthetic chemical pesticide names or rates."
+      ]
+    },
+    {
+      "record_id": "REC-COCONUT-BUD-ROT-03-EXCLUDED",
+      "crop_id": "coconut",
+      "crop_names": {
+        "en": "Coconut",
+        "kn": "ತೆಂಗು"
+      },
+      "candidate_issue": "coconut_bud_rot",
+      "issue_type": "unverified_source_record",
+      "source_verified": false,
+      "eligibility_for_candidate_inspection": false,
+      "exclusion_reason": "Primary source document unverified. Held out of retrieval index until official PDF is obtained and cryptographically verified.",
+      "supported_actions": []
+    },
+    {
+      "record_id": "REC-ARECANUT-KOLEROGA-04-EXCLUDED",
+      "crop_id": "arecanut",
+      "crop_names": {
+        "en": "Arecanut",
+        "kn": "ಅಡಿಕೆ"
+      },
+      "candidate_issue": "arecanut_koleroga",
+      "issue_type": "unverified_source_record",
+      "source_verified": false,
+      "eligibility_for_candidate_inspection": false,
+      "exclusion_reason": "Primary source document unverified. Held out of retrieval index until official PDF is obtained and cryptographically verified.",
+      "supported_actions": []
+    }
+  ],
+  "evidence_gaps": [
+    {
+      "gap_id": "GAP-PADDY-YELLOW-LEAF",
+      "crop": "paddy",
+      "symptom": "Yellowing leaves / ಹಳದಿ ಎಲೆಗಳು",
+      "gap_nature": "Ambiguous symptom with multiple distinct etiologies (nitrogen deficiency, iron chlorosis, waterlogging, root suffocation, blast, or bacterial leaf blight). No single treatment can be justified from the symptom alone.",
+      "clarification_questions": [
+        "Are the lower leaves uniformly turning yellow, or do leaves show spindle/diamond-shaped spots with brown borders?",
+        "Is there waterlogging or stagnant standing water in the field affecting root aeration?"
+      ],
+      "prohibited_actions": [
+        "Do not prescribe nitrogen or urea without soil test.",
+        "Do not diagnose blast from yellowing alone.",
+        "Do not prescribe fungicides or insecticides."
+      ]
+    },
+    {
+      "gap_id": "GAP-ARECANUT-FRUIT-DROP",
+      "crop": "arecanut",
+      "symptom": "Premature nut drop / ಅಡಿಕೆ ಕಾಯಿ ಉದುರುವುದು",
+      "gap_nature": "Ambiguous symptom. Nut drop may be physiological (moisture stress, water stagnation, nutritional deficit) or pathological (Phytophthora Koleroga / Mahali). Furthermore, primary source publication for Koleroga remains unverified.",
+      "clarification_questions": [
+        "Do fallen nuts show dark, water-soaked lesions near the calyx, or are clean nuts dropping?",
+        "Has heavy continuous monsoon rain occurred recently with high moisture around the crowns?"
+      ],
+      "prohibited_actions": [
+        "Do not equate nut drop with confirmed Koleroga.",
+        "Do not prescribe Bordeaux mixture or chemical fungicides.",
+        "Do not recommend unsourced fertilizer or micronutrient applications."
+      ]
+    },
+    {
+      "gap_id": "GAP-COCONUT-LEAF-SPOTS",
+      "crop": "coconut",
+      "symptom": "Brown spots on leaflets / ಕಂದು ಚುಕ್ಕೆಗಳು",
+      "gap_nature": "Ambiguous symptom. Leaf spots can be caused by Bipolaris incurvata, Pestalotiopsis palmarum (grey blight), or potassium/micronutrient deficiency. No primary verified advisory is currently loaded in the repository.",
+      "clarification_questions": [
+        "Are the spots circular, dark-rimmed, or grayish in the center?",
+        "Are spots limited to older outer fronds or present across new central fronds?"
+      ],
+      "prohibited_actions": [
+        "Do not diagnose fungal blight or prescribe chemical sprays.",
+        "Do not prescribe unsourced pruning schedules."
+      ]
+    },
+    {
+      "gap_id": "GAP-UNSPECIFIED-CROP",
+      "crop": "unspecified",
+      "symptom": "Generic disease complaint (e.g., 'ಗಿಡದಲ್ಲಿ ರೋಗ ಬಂದಿದೆ')",
+      "gap_nature": "Complete absence of crop identity and diagnostic symptoms.",
+      "clarification_questions": [
+        "Which crop is affected (paddy, arecanut, coconut, or another crop)?",
+        "Which plant parts show symptoms (leaves, stem, roots, or fruit)?"
+      ],
+      "prohibited_actions": [
+        "Do not guess or assume a default crop.",
+        "Do not provide generic pesticide advice."
+      ]
+    }
+  ]
+}

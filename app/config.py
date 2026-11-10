@@ -35,6 +35,8 @@ class Config:
         self.call_token = e("CALL_TOKEN", "")
         self.exotel_stream_token = e("EXOTEL_STREAM_TOKEN", "").strip()
         self.max_calls = int(e("MAX_CALLS", "3"))
+        self.solution_hub_enabled = e("SOLUTION_HUB_ENABLED", "false").lower() in ("true", "1", "yes")
+        self.solution_hub_allow_inspection = e("SOLUTION_HUB_ALLOW_INSPECTION", "false").lower() in ("true", "1", "yes")
 
 
 cfg = Config()

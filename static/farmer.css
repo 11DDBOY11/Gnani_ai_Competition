@@ -94,6 +94,12 @@ button:focus-visible, a:focus-visible, textarea:focus-visible { outline: 3px sol
 .stop-button { border: 1px solid var(--border); border-radius: 12px; background: #ece8dc; color: var(--green-dark); cursor: pointer; }
 .ai-note { margin: 1rem 0 0; color: var(--muted); font-size: .85rem; line-height: 1.55; }
 .expert-note { margin: .55rem 0 0; color: var(--muted); font-size: .9rem; line-height: 1.6; }
+.sources-card { margin-top: 1rem; padding-top: .85rem; border-top: 1px solid var(--border); }
+.sources-card h3 { margin: 0 0 .4rem; font-size: .95rem; color: var(--green-dark); }
+.sources-list { margin: 0; padding-left: 1.2rem; font-size: .88rem; color: var(--muted); }
+.sources-list li { margin-bottom: .35rem; }
+.sources-list a { color: var(--green); text-decoration: underline; }
+.source-publisher { color: var(--muted); font-size: .82rem; }
 .install-invitation { width: min(100% - 1.5rem, 740px); margin: 0 auto 1rem; padding: .8rem 1rem; display: flex; align-items: center; justify-content: space-between; gap: .65rem; border: 1px solid var(--border); border-radius: 16px; background: #f3efdf; color: var(--muted); font-size: .88rem; }
 .install-invitation p { margin: 0; line-height: 1.5; }
 .install-invitation button { flex: none; min-height: 40px; padding: .45rem .7rem; border: 1px solid var(--border); border-radius: 11px; background: transparent; color: var(--green); font-weight: 680; cursor: pointer; }

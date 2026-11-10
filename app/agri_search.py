@@ -117,6 +117,17 @@ def parse_model_content(content, language: str) -> dict:
 
 
 async def generate_agri_answer(question, language="kn", crop=None, district=None):
+    from .config import cfg
+    if getattr(cfg, "solution_hub_enabled", False):
+        from . import solution_hub
+        return await solution_hub.generate_solution_hub_answer(
+            question=question,
+            language=language,
+            crop=crop,
+            district=district,
+            allow_inspection=getattr(cfg, "solution_hub_allow_inspection", False),
+        )
+
     api_key = os.getenv("GROQ_API_KEY", "").strip()
     if not api_key:
         raise GroqKeyMissing
@@ -136,7 +147,7 @@ async def generate_agri_answer(question, language="kn", crop=None, district=None
             {"role": "user", "content": user_context},
         ],
         "response_format": {"type": "json_object"},
-        "max_completion_tokens": 500,
+        "max_completion_tokens": 1500,
         "temperature": 0.2,
     }
     try:
